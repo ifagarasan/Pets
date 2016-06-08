@@ -7,7 +7,7 @@ namespace SyncMaester.Core
 {
     public class Kontrol
     {
-        private ISettings _settings;
+        private readonly ISettings _settings;
 
         public Kontrol(ISettings settings)
         {
@@ -23,6 +23,11 @@ namespace SyncMaester.Core
                 throw new ArgumentNullException(nameof(syncPair));
 
             _settings.SyncPairs.Add(syncPair);
+        }
+
+        public bool RemoveSyncPair(ISyncPair syncPair)
+        {
+            return _settings.SyncPairs.Remove(syncPair);
         }
     }
 }

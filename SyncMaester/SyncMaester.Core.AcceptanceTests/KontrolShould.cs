@@ -6,22 +6,43 @@ namespace SyncMaester.Core.AcceptanceTests
     [TestClass]
     public class KontrolShould
     {
+        Settings _settings;
+        Kontrol _control;
+
+        [TestInitialize]
+        public void Setup()
+        {
+            _settings = new Settings();
+            _control = new Kontrol(_settings);
+        }
+
         [TestMethod]
         public void AllowAddingOfSyncPairs()
         {
-            Settings settings = new Settings();
-            Kontrol control = new Kontrol(settings);
-
-            SyncPair syncPair = new SyncPair();
-            syncPair.SourceFolder = "abc";
+            SyncPair syncPair = new SyncPair {SourceFolder = "abc"};
 
             syncPair.DestinationFolders.Add("def");
             syncPair.DestinationFolders.Add("ghi");
 
-            control.AddSyncPair(syncPair);
+            _control.AddSyncPair(syncPair);
 
-            Assert.AreEqual(1, settings.SyncPairs.Count);
-            Assert.AreSame(syncPair, settings.SyncPairs[0]);
+            Assert.AreEqual(1, _settings.SyncPairs.Count);
+            Assert.AreSame(syncPair, _settings.SyncPairs[0]);
+        }
+
+        [TestMethod]
+        public void AllowRemovingOfSyncPairs()
+        {
+            SyncPair syncPair = new SyncPair { SourceFolder = "abc" };
+
+            syncPair.DestinationFolders.Add("def");
+            syncPair.DestinationFolders.Add("ghi");
+
+            _settings.SyncPairs.Add(syncPair);
+
+            _control.RemoveSyncPair(syncPair);
+
+            Assert.AreEqual(0, _settings.SyncPairs.Count);
         }
     }
 }
