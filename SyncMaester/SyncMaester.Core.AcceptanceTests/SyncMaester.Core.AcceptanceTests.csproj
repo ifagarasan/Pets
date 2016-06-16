@@ -38,10 +38,27 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Kore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Kore.1.0.0-CI00048\lib\net40\Kore.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Kore.Dev, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Kore.Dev.1.0.0-CI00048\lib\net452\Kore.Dev.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Kore.IO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Kore.IO.1.0.0-CI00048\lib\net461\Kore.IO.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Kore.Settings, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Kore.Settings.1.0.0-CI00048\lib\net461\Kore.Settings.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -56,14 +73,17 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="KontrolShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SyncMaesterEndToEnd.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SyncMaester.Core\SyncMaester.Core.csproj">
       <Project>{F5FE481C-51D1-4C2B-A9ED-5D1E00D62B52}</Project>
       <Name>SyncMaester.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

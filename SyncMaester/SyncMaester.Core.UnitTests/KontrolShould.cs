@@ -1,84 +1,109 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Kore.IO.Sync;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System.Collections;
-using System.Collections.Generic;
-using Castle.Components.DictionaryAdapter;
 
 namespace SyncMaester.Core.UnitTests
 {
     [TestClass]
     public class KontrolShould
     {
-        private Kontrol _kontrol;
-        private Mock<ISettings> _mockSettings;
-        private Mock<IList<ISyncPair>> _mockList;
-        private Mock<ISyncPair> _mockSyncPair;
+        ISettings _settings;
+        Mock<IDiffBuilder> _mockDiffBuilder;
+        Mock<IFolderDiffProcessor> _mockFolderDiffProcessor;
+        IKontrol _kontrol;
 
         [TestInitialize]
         public void Setup()
         {
-            _mockList = new Mock<IList<ISyncPair>>();
-            _mockSyncPair = new Mock<ISyncPair>();
-
-            _mockSettings = new Mock<ISettings>();
-            _kontrol = new Kontrol(_mockSettings.Object);
+            _settings = new Settings();
+            _mockDiffBuilder = new Mock<IDiffBuilder>();
+            _mockFolderDiffProcessor = new Mock<IFolderDiffProcessor>();
+            _kontrol = new Kontrol(_settings, _mockDiffBuilder.Object, _mockFolderDiffProcessor.Object);
         }
 
+        #region AddSyncPair
+
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ThrowArgumentNullExceptionIfSettingsIsNull()
+        public void SetSyncPairToProvided()
         {
-            _kontrol = new Kontrol(null);
+            ISyncPair syncPair = new SyncPair {Source = "abc", Destination = "efg"};
+
+            _kontrol.AddSyncPair(syncPair);
+
+            Assert.AreSame(syncPair, _settings.SyncPair);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void ThrowArgumentNullExceptionIfSyncPairIsNullOnAdd()
+        public void ThrowArgumentNullExceptionIfSyncPairIsNull()
         {
             _kontrol.AddSyncPair(null);
         }
 
-        [TestMethod]
-        public void AddTheSyncPairToSyncPairs()
-        {
-            _mockList.Setup(m => m.Add(It.IsAny<ISyncPair>()));
-            _mockSettings.Setup(m => m.SyncPairs).Returns(_mockList.Object);
-
-            _kontrol.AddSyncPair(_mockSyncPair.Object);
-
-            _mockList.Verify(m => m.Add(_mockSyncPair.Object));
-        }
+        #endregion
 
         [TestMethod]
-        public void RemoveTheSyncPairFromSyncPairs()
+        public void CallBuildDiffOnDiffBuilder()
         {
-            _mockList.Setup(m => m.Remove(It.IsAny<ISyncPair>()));
-            _mockSettings.Setup(m => m.SyncPairs).Returns(_mockList.Object);
+            _settings.SyncPair = new SyncPair { Source = "abc", Destination = "efg" };
 
-            _kontrol.RemoveSyncPair(_mockSyncPair.Object);
+            IFolderDiff expectedDiff = new FolderDiff(new List<IDiff>());
 
-            _mockList.Verify(m => m.Remove(_mockSyncPair.Object));
+            _mockDiffBuilder.Setup(m => m.Build(It.IsAny<ISyncPair>())).Returns(expectedDiff);
+
+            IFolderDiff actualDiff = _kontrol.BuildDiff();
+
+            _mockDiffBuilder.Verify(m => m.Build(_settings.SyncPair));
+
+            Assert.AreSame(expectedDiff, actualDiff);
         }
 
         [TestMethod]
-        public void ReturnsTrueWhenRemovalSucceeds()
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ThrowArgumentNullExceptionIfSettingsNull()
         {
-            TestRemoveReturnValue(true);
+            new Kontrol(null, _mockDiffBuilder.Object, _mockFolderDiffProcessor.Object);
         }
 
         [TestMethod]
-        public void ReturnsFalseWhenRemovalFalse()
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ThrowArgumentNullExceptionIfDiffBuilderNull()
         {
-            TestRemoveReturnValue(false);
+            new Kontrol(_settings, null, _mockFolderDiffProcessor.Object);
         }
 
-        public void TestRemoveReturnValue(bool returnValue)
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ThrowArgumentNullExceptionIfDiffProcessorNull()
         {
-            _mockList.Setup(m => m.Remove(It.IsAny<ISyncPair>())).Returns(returnValue);
-            _mockSettings.Setup(m => m.SyncPairs).Returns(_mockList.Object);
-
-            Assert.AreEqual(returnValue, _kontrol.RemoveSyncPair(_mockSyncPair.Object));
+            new Kontrol(_settings, _mockDiffBuilder.Object, null);
         }
+
+        #region ProcessFolderDiff
+
+        [TestMethod]
+        public void ProcessFolderDiff()
+        {
+            Mock<IFolderDiff> mockFolderDiff = new Mock<IFolderDiff>();
+
+            _kontrol.ProcessFolderDiff(mockFolderDiff.Object);
+
+            _mockFolderDiffProcessor.Verify(m => m.Process(mockFolderDiff.Object));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ThrowArgumentNullExceptionIfFolderDiffIsNull()
+        {
+            _kontrol.ProcessFolderDiff(null);
+        }
+
+        #endregion
     }
 }

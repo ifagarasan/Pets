@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-
-namespace SyncMaester.Core
+﻿namespace SyncMaester.Core
 {
     public interface ISyncPair
     {
-        IList<string> DestinationFolders { get; set; }
-        string SourceFolder { get; set; }
+        string Source{ get; set; }
+        string Destination { get; set; }
     }
 }
