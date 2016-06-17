@@ -16,44 +16,79 @@ namespace SyncMaester.Core.UnitTests
     [TestClass]
     public class DiffProcessorShould
     {
+        DiffProcessor _diffProcessor;
+        Mock<IDiff> _mockDiff;
+
+        private Mock<IKoreFileInfo> _mockSourceFileInfo;
+        Mock<IKoreFolderInfo> _mockSourceFolderInfo;
+
+        Mock<IKoreFolderInfo> _mockDestinationFolderInfo;
+        Mock<IKoreFileInfo> _mockDestinationFileInfo;
+
+        readonly string _sourceTopFolder = "D:\\stuff\\original";
+        readonly string _fileName = "file1.txt";
+        readonly string _destinationTopFolder = "C:\\bak";
+
+        [TestInitialize]
+        public void Setup()
+        {
+            _diffProcessor = new DiffProcessor();
+
+            _mockDiff = new Mock<IDiff>();
+
+            _mockSourceFileInfo = new Mock<IKoreFileInfo>();
+            _mockSourceFileInfo.Setup(m => m.Copy(It.IsAny<IKoreIoNodeInfo>()));
+
+            _mockSourceFolderInfo = new Mock<IKoreFolderInfo>();
+
+            _mockDestinationFolderInfo = new Mock<IKoreFolderInfo>();
+            _mockDestinationFileInfo = new Mock<IKoreFileInfo>();
+
+            _mockSourceFolderInfo.Setup(m => m.FullName).Returns(_sourceTopFolder);
+            _mockDestinationFolderInfo.Setup(m => m.FullName).Returns(_destinationTopFolder);
+
+            _mockDiff.Setup(m => m.SourceFileInfo).Returns(_mockSourceFileInfo.Object);
+            _mockDiff.Setup(m => m.DestinationFileInfo).Returns(_mockDestinationFileInfo.Object);
+        }
+
         [TestMethod]
         public void CopySourceToDestinationOnSourceNew()
         {
-            var diffProcessor = new DiffProcessor();
+            var sourceFile = Path.Combine(_sourceTopFolder, _fileName);
+            var destinationFile = Path.Combine(_destinationTopFolder, _fileName);
 
-            var mockDiff = new Mock<IDiff>();
+            _mockSourceFileInfo.Setup(m => m.FullName).Returns(sourceFile);
+            _mockDestinationFileInfo.Setup(m => m.FullName).Returns(destinationFile);
 
-            var sourceTopFolder = "D:\\stuff\\original";
-            var fileName = "file1.txt";
-            var sourceFile = Path.Combine(sourceTopFolder, fileName);
-
-            var mockSourceFileInfo = new Mock<IKoreFileInfo>();
-            mockSourceFileInfo.Setup(m => m.FullName).Returns(sourceFile);
-
-            var mockSourceFolderInfo = new Mock<IKoreFolderInfo>();
-            mockSourceFolderInfo.Setup(m => m.FullName).Returns(sourceTopFolder);
-
-            var destinationTopFolder = "C:\\bak";
-            var mockDestinationFolderInfo = new Mock<IKoreFolderInfo>();
-            mockDestinationFolderInfo.Setup(m => m.FullName).Returns(destinationTopFolder);
-
-            var destinationFile = Path.Combine(destinationTopFolder, fileName);
-            var mockDestinationFileInfo = new Mock<IKoreFileInfo>();
-            mockDestinationFileInfo.Setup(m => m.FullName).Returns(destinationFile);
-
-            mockSourceFileInfo.Setup(m => m.Copy(It.IsAny<IKoreIoNodeInfo>()))
+            _mockSourceFileInfo.Setup(m => m.Copy(It.IsAny<IKoreIoNodeInfo>()))
                 .Callback((IKoreIoNodeInfo fileInfo) =>
                 {
                     Assert.AreEqual(destinationFile, fileInfo.FullName);
                 });
 
-            mockDiff.Setup(m => m.Type).Returns(DiffType.SourceNew);
-            mockDiff.Setup(m => m.SourceFileInfo).Returns(mockSourceFileInfo.Object);
-            mockDiff.Setup(m => m.DestinationFileInfo).Returns(mockDestinationFileInfo.Object);
+            _mockDiff.Setup(m => m.Type).Returns(DiffType.SourceNew);
 
-            diffProcessor.Process(mockDiff.Object, mockSourceFolderInfo.Object, mockDestinationFolderInfo.Object);
+            _diffProcessor.Process(_mockDiff.Object, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);
 
-            mockSourceFileInfo.Verify(m => m.Copy(It.IsAny<IKoreIoNodeInfo>()), Times.Exactly(1));
+            _mockSourceFileInfo.Verify(m => m.Copy(It.IsAny<IKoreIoNodeInfo>()), Times.Exactly(1));
+        }
+
+        [TestMethod]
+        public void CopySourceToDestinationOnSourceNewer()
+        {
+            var sourceFile = Path.Combine(_sourceTopFolder, _fileName);
+
+            _mockSourceFileInfo.Setup(m => m.FullName).Returns(sourceFile);            
+
+            var destinationFile = Path.Combine(_destinationTopFolder, _fileName);
+            
+            _mockDestinationFileInfo.Setup(m => m.FullName).Returns(destinationFile);
+
+            _mockDiff.Setup(m => m.Type).Returns(DiffType.SourceNewer);
+
+            _diffProcessor.Process(_mockDiff.Object, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);
+
+            _mockSourceFileInfo.Verify(m => m.Copy(_mockDestinationFileInfo.Object));
         }
     }
 }

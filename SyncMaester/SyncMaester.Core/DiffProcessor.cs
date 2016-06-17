@@ -8,20 +8,17 @@ namespace SyncMaester.Core
     {
         public void Process(IDiff diff, IKoreFolderInfo source, IKoreFolderInfo destination)
         {
-            diff.SourceFileInfo.Copy(SelectTarget(diff, source, destination));
-        }
-
-        private static IKoreFileInfo SelectTarget(IDiff diff, IKoreFolderInfo source, IKoreFolderInfo destination)
-        {
-            IKoreFileInfo target = diff.DestinationFileInfo;
-
             if (diff.Type == DiffType.SourceNew)
             {
                 string sourceInnerFullPath = BuildRelativePath(diff.SourceFileInfo, source);
-                target = new KoreFileInfo(Path.Combine(destination.FullName, sourceInnerFullPath));
-            }
+                IKoreFileInfo target = new KoreFileInfo(Path.Combine(destination.FullName, sourceInnerFullPath));
 
-            return target;
+                diff.SourceFileInfo.Copy(target);
+            }
+            else if (diff.Type == DiffType.SourceNewer)
+            {
+                diff.SourceFileInfo.Copy(diff.DestinationFileInfo);
+            }
         }
 
         private static string BuildRelativePath(IKoreFileInfo folderInfo, IKoreFolderInfo parent)
