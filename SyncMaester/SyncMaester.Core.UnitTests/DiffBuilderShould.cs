@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Kore.IO.Scanners;
 using Kore.IO.Sync;
+using Kore.IO.Util;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -57,24 +58,30 @@ namespace SyncMaester.Core.UnitTests
         [TestMethod]
         public void ReturnedTheDiffList()
         {
-            string source = "src";
-            string destination = "dest";
+            var source = "src";
+            var destination = "dest";
 
-            Mock<IFileScanResult> sourceScanResult = new Mock<IFileScanResult>();
-            Mock<IFileScanResult> destinationScanResult = new Mock<IFileScanResult>();
+            var mockSourceFolderInfo = new Mock<IKoreFolderInfo>();
+            mockSourceFolderInfo.Setup(m => m.FullName).Returns(source);
+
+            var mockDestinationFolderInfo = new Mock<IKoreFolderInfo>();
+            mockDestinationFolderInfo.Setup(m => m.FullName).Returns(destination);
+
+            var sourceScanResult = new Mock<IFileScanResult>();
+            var destinationScanResult = new Mock<IFileScanResult>();
 
             _mockFileScanner.Setup(m => m.Scan(source)).Returns(sourceScanResult.Object);
             _mockFileScanner.Setup(m => m.Scan(destination)).Returns(destinationScanResult.Object);
 
-            Mock<ISyncPair> mockSyncPair = new Mock<ISyncPair>();
+            var mockSyncPair = new Mock<ISyncPair>();
 
-            mockSyncPair.Setup(m => m.Source).Returns(source);
-            mockSyncPair.Setup(m => m.Destination).Returns(destination);
+            mockSyncPair.Setup(m => m.Source).Returns(mockSourceFolderInfo.Object);
+            mockSyncPair.Setup(m => m.Destination).Returns(mockDestinationFolderInfo.Object);
 
-            Mock<IFolderDiff> mockFolderDIff = new Mock<IFolderDiff>();
+            var mockFolderDIff = new Mock<IFolderDiff>();
             _mockFolderDiffer.Setup(m => m.BuildDiff(It.IsAny<IFileScanResult>(), It.IsAny<IFileScanResult>())).Returns(mockFolderDIff.Object);
 
-            IFolderDiff diff =  _builder.Build(mockSyncPair.Object);
+            var diff =  _builder.Build(mockSyncPair.Object);
 
             _mockFileScanner.VerifyAll();
             _mockFolderDiffer.Verify(m => m.BuildDiff(sourceScanResult.Object, destinationScanResult.Object));

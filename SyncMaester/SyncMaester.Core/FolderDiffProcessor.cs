@@ -20,7 +20,7 @@ namespace SyncMaester.Core
             ObjectValidation.IsNotNull(folderDiff.Diffs);
 
             foreach (var diff in folderDiff.Diffs)
-                _diffProcessor.Process(diff);
+                _diffProcessor.Process(diff, folderDiff.Source, folderDiff.Destination);
         }
     }
 }

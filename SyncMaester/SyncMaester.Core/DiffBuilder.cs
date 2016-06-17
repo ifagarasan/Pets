@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Kore.IO.Scanners;
 using Kore.IO.Sync;
-using Kore.Validation;
+using static Kore.Validation.ObjectValidation;
 
 namespace SyncMaester.Core
 {
@@ -13,8 +13,8 @@ namespace SyncMaester.Core
 
         public DiffBuilder(IFileScanner fileScanner, IFolderDiffer folderDiffer)
         {
-            ObjectValidation.IsNotNull(fileScanner, nameof(fileScanner));
-            ObjectValidation.IsNotNull(folderDiffer, nameof(folderDiffer));
+            IsNotNull(fileScanner, nameof(fileScanner));
+            IsNotNull(folderDiffer, nameof(folderDiffer));
 
             _fileScanner = fileScanner;
             _folderDiffer = folderDiffer;
@@ -22,10 +22,10 @@ namespace SyncMaester.Core
 
         public IFolderDiff Build(ISyncPair syncPair)
         {
-            ObjectValidation.IsNotNull(syncPair, nameof(syncPair));
+            IsNotNull(syncPair, nameof(syncPair));
 
-            IFileScanResult sourceScan = _fileScanner.Scan(syncPair.Source);
-            IFileScanResult destinationScan = _fileScanner.Scan(syncPair.Destination);
+            var sourceScan = _fileScanner.Scan(syncPair.Source.FullName);
+            var destinationScan = _fileScanner.Scan(syncPair.Destination.FullName);
 
             return _folderDiffer.BuildDiff(sourceScan, destinationScan);
         }

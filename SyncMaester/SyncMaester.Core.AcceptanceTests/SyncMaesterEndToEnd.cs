@@ -43,8 +43,8 @@ namespace SyncMaester.Core.AcceptanceTests
             IKontrol kontrol = new Kontrol(new Settings(), diffBuilder, folderDiffProcessor);
             ISyncPair syncPair = new SyncPair();
 
-            syncPair.Source = _sourceFolder;
-            syncPair.Destination = _destinationFolder;
+            syncPair.Source = new KoreFolderInfo(_sourceFolder);
+            syncPair.Destination = new KoreFolderInfo(_destinationFolder);
 
             kontrol.AddSyncPair(syncPair);
 

@@ -1,8 +1,10 @@
-﻿namespace SyncMaester.Core
+﻿using Kore.IO.Util;
+
+namespace SyncMaester.Core
 {
     public interface ISyncPair
     {
-        string Source{ get; set; }
-        string Destination { get; set; }
+        IKoreFolderInfo Source{ get; set; }
+        IKoreFolderInfo Destination { get; set; }
     }
 }

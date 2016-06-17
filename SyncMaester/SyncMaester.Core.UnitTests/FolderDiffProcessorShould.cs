@@ -50,16 +50,22 @@ namespace SyncMaester.Core.UnitTests
 
             var index = 0;
 
-            _mockDiffProcessor.Setup(m => m.Process(It.IsAny<IDiff>())).Callback((IDiff x) =>
+            var mockSourceFolderInfo = new Mock<IKoreFolderInfo>();
+            var mockDestinationFolderInfo = new Mock<IKoreFolderInfo>();
+
+            _mockDiffProcessor.Setup(m => m.Process(It.IsAny<IDiff>(), It.IsAny<IKoreFolderInfo>(), It.IsAny<IKoreFolderInfo>()))
+                .Callback((IDiff x, IKoreFolderInfo source, IKoreFolderInfo destination) =>
             {
                 Assert.AreSame(diffs[index++], x);
             });
 
             _mockFolderDiff.Setup(m => m.Diffs).Returns(diffs);
+            _mockFolderDiff.Setup(m => m.Source).Returns(mockSourceFolderInfo.Object);
+            _mockFolderDiff.Setup(m => m.Destination).Returns(mockDestinationFolderInfo.Object);
 
             _folderDiffProcessor.Process(_mockFolderDiff.Object);
 
-            _mockDiffProcessor.Verify(m => m.Process(It.IsAny<IDiff>()), Times.Exactly(3));
+            _mockDiffProcessor.Verify(m => m.Process(It.IsAny<IDiff>(), mockSourceFolderInfo.Object, mockDestinationFolderInfo.Object), Times.Exactly(3));
         }
 
         [TestMethod]
