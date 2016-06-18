@@ -90,5 +90,38 @@ namespace SyncMaester.Core.UnitTests
 
             _mockSourceFileInfo.Verify(m => m.Copy(_mockDestinationFileInfo.Object));
         }
+
+        [TestMethod]
+        public void CopyDestinationToSourceOnSourceOlder()
+        {
+            var sourceFile = Path.Combine(_sourceTopFolder, _fileName);
+
+            _mockSourceFileInfo.Setup(m => m.FullName).Returns(sourceFile);
+
+            var destinationFile = Path.Combine(_destinationTopFolder, _fileName);
+
+            _mockDestinationFileInfo.Setup(m => m.FullName).Returns(destinationFile);
+
+            _mockDiff.Setup(m => m.Type).Returns(DiffType.SourceOlder);
+
+            _diffProcessor.Process(_mockDiff.Object, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);
+
+            _mockDestinationFileInfo.Verify(m => m.Copy(_mockSourceFileInfo.Object));
+        }
+
+        [TestMethod]
+        public void DeleteDestinationOnDestinationOrphan()
+        {
+            var destinationFile = Path.Combine(_destinationTopFolder, _fileName);
+
+            _mockDestinationFileInfo.Setup(m => m.FullName).Returns(destinationFile);
+            _mockDestinationFolderInfo.Setup(m => m.Delete());
+
+            _mockDiff.Setup(m => m.Type).Returns(DiffType.DestinationOrphan);
+
+            _diffProcessor.Process(_mockDiff.Object, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);
+
+            _mockDestinationFileInfo.Verify(m => m.Delete());
+        }
     }
 }

@@ -16,9 +16,11 @@ namespace SyncMaester.Core
                 diff.SourceFileInfo.Copy(target);
             }
             else if (diff.Type == DiffType.SourceNewer)
-            {
                 diff.SourceFileInfo.Copy(diff.DestinationFileInfo);
-            }
+            else if (diff.Type == DiffType.SourceOlder)
+                diff.DestinationFileInfo.Copy(diff.SourceFileInfo);
+            else if (diff.Type == DiffType.DestinationOrphan)
+                diff.DestinationFileInfo.Delete();
         }
 
         private static string BuildRelativePath(IKoreFileInfo folderInfo, IKoreFolderInfo parent)

@@ -27,8 +27,8 @@ namespace SyncMaester.Core.AcceptanceTests
         [TestInitialize]
         public void Setup()
         {
-            EnsureFolderExits(TestRoot);
-            EnsureFolderExits(_currentWorkingFolder);
+            EnsureFolderExists(TestRoot);
+            EnsureFolderExists(_currentWorkingFolder);
 
             _diffBuilder = new DiffBuilder(new FileScanner(new FileRetriever(new FileInfoProvider())), new FolderDiffer());
             _folderDiffProcessor = new FolderDiffProcessor(new DiffProcessor());
@@ -43,7 +43,7 @@ namespace SyncMaester.Core.AcceptanceTests
             _sourceFolder = Path.Combine(currentTest, "src");
             _destinationFolder = Path.Combine(currentTest, "dest");
 
-            EnsureFolderExits(_destinationFolder);
+            EnsureFolderExists(_destinationFolder);
 
             var fileName = "file1.txt";
             var sourceFileInfo = new KoreFileInfo(Path.Combine(_sourceFolder, fileName));
@@ -100,6 +100,73 @@ namespace SyncMaester.Core.AcceptanceTests
 
             Assert.AreEqual(DiffType.SourceNewer, folderDiff.Diffs[0].Type);
             Assert.AreEqual(now, destinationFileInfo.LastWriteTime);
+        }
+
+        [TestMethod]
+        public void CopyANewerDestinationile()
+        {
+            var currentTest = Path.Combine(_currentWorkingFolder, "test3");
+
+            _sourceFolder = Path.Combine(currentTest, "src");
+            _destinationFolder = Path.Combine(currentTest, "dest");
+
+            var now = DateTime.Now;
+            var fileName = "file1.txt";
+
+            var sourceFileInfo = new KoreFileInfo(Path.Combine(_sourceFolder, fileName));
+            sourceFileInfo.EnsureExists();
+            sourceFileInfo.LastWriteTime = now.AddSeconds(-1);
+
+            var destinationFileInfo = new KoreFileInfo(Path.Combine(_destinationFolder, fileName));
+            destinationFileInfo.EnsureExists();
+            destinationFileInfo.LastWriteTime = now;
+
+            var syncPair = new SyncPair
+            {
+                Source = new KoreFolderInfo(_sourceFolder),
+                Destination = new KoreFolderInfo(_destinationFolder)
+            };
+
+            _kontrol.AddSyncPair(syncPair);
+
+            var folderDiff = _kontrol.BuildDiff();
+
+            _kontrol.ProcessFolderDiff(folderDiff);
+
+            Assert.AreEqual(DiffType.SourceOlder, folderDiff.Diffs[0].Type);
+            Assert.AreEqual(now, sourceFileInfo.LastWriteTime);
+        }
+
+        [TestMethod]
+        public void DeleteAnOrphanDestinationFile()
+        {
+            var currentTest = Path.Combine(_currentWorkingFolder, "test4");
+
+            _sourceFolder = Path.Combine(currentTest, "src");
+            EnsureFolderExists(_sourceFolder);
+
+            _destinationFolder = Path.Combine(currentTest, "dest");
+            EnsureFolderExists(_destinationFolder);
+
+            var fileName = "file1.txt";
+
+            var destinationFileInfo = new KoreFileInfo(Path.Combine(_destinationFolder, fileName));
+            destinationFileInfo.EnsureExists();
+
+            var syncPair = new SyncPair
+            {
+                Source = new KoreFolderInfo(_sourceFolder),
+                Destination = new KoreFolderInfo(_destinationFolder)
+            };
+
+            _kontrol.AddSyncPair(syncPair);
+
+            var folderDiff = _kontrol.BuildDiff();
+
+            _kontrol.ProcessFolderDiff(folderDiff);
+
+            Assert.AreEqual(DiffType.DestinationOrphan, folderDiff.Diffs[0].Type);
+            Assert.IsFalse(destinationFileInfo.Exists);
         }
     }
 }
