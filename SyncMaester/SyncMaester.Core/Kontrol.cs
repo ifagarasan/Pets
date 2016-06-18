@@ -1,4 +1,5 @@
 ﻿using System;
+using Kore.IO.Exceptions;
 using Kore.IO.Sync;
 using static Kore.Validation.ObjectValidation;
 
@@ -32,6 +33,9 @@ namespace SyncMaester.Core
         {
             IsNotNull(_settings.SyncPair);
             _settings.SyncPair.Destination.EnsureExists();
+
+            if (!_settings.SyncPair.Source.Exists)
+                throw new NodeNotFoundException();
 
             return _diffBuilder.Build(_settings.SyncPair);
         }

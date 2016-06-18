@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Kore.IO.Exceptions;
 using Kore.IO.Sync;
 using Kore.IO.Util;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -33,9 +34,11 @@ namespace SyncMaester.Core.UnitTests
         {
             _mockSourceFolderInfo = new Mock<IKoreFolderInfo>();
             _mockSourceFolderInfo.Setup(m => m.FullName).Returns(_sourceFolder);
+            _mockSourceFolderInfo.Setup(m => m.Exists).Returns(true);
 
             _mockDestinationFolderInfo = new Mock<IKoreFolderInfo>();
-            _mockSourceFolderInfo.Setup(m => m.FullName).Returns(_destinationFolder);
+            _mockDestinationFolderInfo.Setup(m => m.FullName).Returns(_destinationFolder);
+            _mockDestinationFolderInfo.Setup(m => m.Exists).Returns(true);
 
             _mockSyncPair = new Mock<ISyncPair>();
             _mockSyncPair.Setup(m => m.Source).Returns(_mockSourceFolderInfo.Object);
@@ -117,6 +120,15 @@ namespace SyncMaester.Core.UnitTests
             _kontrol.BuildDiff();
 
             _mockDestinationFolderInfo.Verify(m => m.EnsureExists(), Times.Once);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NodeNotFoundException))]
+        public void ValidateSourceFolderExistsOnBUild()
+        {
+            _mockSourceFolderInfo.Setup(m => m.Exists).Returns(false);
+
+            _kontrol.BuildDiff();
         }
 
         [TestMethod]
