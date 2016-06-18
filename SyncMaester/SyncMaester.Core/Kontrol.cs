@@ -1,6 +1,6 @@
 ﻿using System;
 using Kore.IO.Sync;
-using Kore.Validation;
+using static Kore.Validation.ObjectValidation;
 
 namespace SyncMaester.Core
 {
@@ -12,9 +12,9 @@ namespace SyncMaester.Core
 
         public Kontrol(ISettings settings, IDiffBuilder diffBuilder, IFolderDiffProcessor folderDiffProcessor)
         {
-            ObjectValidation.IsNotNull(settings, nameof(settings));
-            ObjectValidation.IsNotNull(diffBuilder, nameof(diffBuilder));
-            ObjectValidation.IsNotNull(folderDiffProcessor, nameof(folderDiffProcessor));
+            IsNotNull(settings, nameof(settings));
+            IsNotNull(diffBuilder, nameof(diffBuilder));
+            IsNotNull(folderDiffProcessor, nameof(folderDiffProcessor));
 
             _settings = settings;
             _diffBuilder = diffBuilder;
@@ -23,19 +23,22 @@ namespace SyncMaester.Core
 
         public void AddSyncPair(ISyncPair syncPair)
         {
-            ObjectValidation.IsNotNull(syncPair, nameof(syncPair));
+            IsNotNull(syncPair, nameof(syncPair));
 
             _settings.SyncPair = syncPair;
         }
 
         public IFolderDiff BuildDiff()
         {
+            IsNotNull(_settings.SyncPair);
+            _settings.SyncPair.Destination.EnsureExists();
+
             return _diffBuilder.Build(_settings.SyncPair);
         }
 
         public void ProcessFolderDiff(IFolderDiff folderDiff)
         {
-            ObjectValidation.IsNotNull(folderDiff);
+            IsNotNull(folderDiff);
 
             _folderDiffProcessor.Process(folderDiff);
         }
