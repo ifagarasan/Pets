@@ -123,5 +123,48 @@ namespace SyncMaester.Core.UnitTests
 
             _mockDestinationFileInfo.Verify(m => m.Delete());
         }
+
+        [TestMethod]
+        public void DoNothingOnIdentical()
+        {
+            var sourceFile = Path.Combine(_sourceTopFolder, _fileName);
+            var destinationFile = Path.Combine(_destinationTopFolder, _fileName);
+
+            _mockSourceFileInfo.Setup(m => m.FullName).Returns(sourceFile);
+            _mockSourceFileInfo.Setup(m => m.Delete());
+
+            _mockDestinationFileInfo.Setup(m => m.FullName).Returns(destinationFile);
+            _mockDestinationFileInfo.Setup(m => m.Delete());
+
+            _mockDiff.Setup(m => m.Type).Returns(DiffType.Identical);
+
+            _diffProcessor.Process(_mockDiff.Object, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);
+
+            _mockSourceFileInfo.Verify(m => m.Copy(It.IsAny<IKoreFileInfo>()), Times.Never);
+            _mockDestinationFileInfo.Verify(m => m.Copy(It.IsAny<IKoreFileInfo>()), Times.Never);
+            _mockSourceFileInfo.Verify(m => m.Delete(), Times.Never);
+            _mockDestinationFileInfo.Verify(m => m.Delete(), Times.Never);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ValidatesDiffOnProcess()
+        {
+            _diffProcessor.Process(null, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ValidatesSourceOnProcess()
+        {
+            _diffProcessor.Process(_mockDiff.Object, null, _mockDestinationFolderInfo.Object);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ValidatesDestinationOnProcess()
+        {
+            _diffProcessor.Process(_mockDiff.Object, _mockSourceFolderInfo.Object, null);
+        }
     }
 }

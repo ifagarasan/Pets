@@ -19,6 +19,7 @@ namespace SyncMaester.Core.AcceptanceTests
         private static readonly string _currentWorkingFolder = Path.Combine(TestRoot, DateTime.Now.Ticks.ToString());
         private string _destinationFolder;
         private string _sourceFolder;
+        readonly string _primaryTestFileName = "file1.txt";
 
         IDiffBuilder _diffBuilder;
         IFolderDiffProcessor _folderDiffProcessor;
@@ -45,8 +46,7 @@ namespace SyncMaester.Core.AcceptanceTests
 
             EnsureFolderExists(_destinationFolder);
 
-            var fileName = "file1.txt";
-            var sourceFileInfo = new KoreFileInfo(Path.Combine(_sourceFolder, fileName));
+            var sourceFileInfo = new KoreFileInfo(Path.Combine(_sourceFolder, _primaryTestFileName));
             sourceFileInfo.EnsureExists();
 
             var syncPair = new SyncPair
@@ -61,7 +61,7 @@ namespace SyncMaester.Core.AcceptanceTests
 
             _kontrol.ProcessFolderDiff(folderDiff);
 
-            var destinationFileInfo = new KoreFileInfo(Path.Combine(_destinationFolder, fileName));
+            var destinationFileInfo = new KoreFileInfo(Path.Combine(_destinationFolder, _primaryTestFileName));
 
             Assert.AreEqual(DiffType.SourceNew, folderDiff.Diffs[0].Type);
             Assert.IsTrue(destinationFileInfo.Exists);
@@ -76,13 +76,12 @@ namespace SyncMaester.Core.AcceptanceTests
             _destinationFolder = Path.Combine(currentTest, "dest");
 
             var now = DateTime.Now;
-            var fileName = "file1.txt";
 
-            var sourceFileInfo = new KoreFileInfo(Path.Combine(_sourceFolder, fileName));
+            var sourceFileInfo = new KoreFileInfo(Path.Combine(_sourceFolder, _primaryTestFileName));
             sourceFileInfo.EnsureExists();
             sourceFileInfo.LastWriteTime = now;
 
-            var destinationFileInfo = new KoreFileInfo(Path.Combine(_destinationFolder, fileName));
+            var destinationFileInfo = new KoreFileInfo(Path.Combine(_destinationFolder, _primaryTestFileName));
             destinationFileInfo.EnsureExists();
             destinationFileInfo.LastWriteTime = now.AddSeconds(-1);
 
@@ -103,7 +102,7 @@ namespace SyncMaester.Core.AcceptanceTests
         }
 
         [TestMethod]
-        public void CopyANewerDestinationile()
+        public void CopyANewerDestinationFile()
         {
             var currentTest = Path.Combine(_currentWorkingFolder, "test3");
 
@@ -111,13 +110,12 @@ namespace SyncMaester.Core.AcceptanceTests
             _destinationFolder = Path.Combine(currentTest, "dest");
 
             var now = DateTime.Now;
-            var fileName = "file1.txt";
 
-            var sourceFileInfo = new KoreFileInfo(Path.Combine(_sourceFolder, fileName));
+            var sourceFileInfo = new KoreFileInfo(Path.Combine(_sourceFolder, _primaryTestFileName));
             sourceFileInfo.EnsureExists();
             sourceFileInfo.LastWriteTime = now.AddSeconds(-1);
 
-            var destinationFileInfo = new KoreFileInfo(Path.Combine(_destinationFolder, fileName));
+            var destinationFileInfo = new KoreFileInfo(Path.Combine(_destinationFolder, _primaryTestFileName));
             destinationFileInfo.EnsureExists();
             destinationFileInfo.LastWriteTime = now;
 
@@ -148,9 +146,7 @@ namespace SyncMaester.Core.AcceptanceTests
             _destinationFolder = Path.Combine(currentTest, "dest");
             EnsureFolderExists(_destinationFolder);
 
-            var fileName = "file1.txt";
-
-            var destinationFileInfo = new KoreFileInfo(Path.Combine(_destinationFolder, fileName));
+            var destinationFileInfo = new KoreFileInfo(Path.Combine(_destinationFolder, _primaryTestFileName));
             destinationFileInfo.EnsureExists();
 
             var syncPair = new SyncPair

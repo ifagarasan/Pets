@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Kore.IO.Sync;
 using Kore.IO.Util;
+using static Kore.Validation.ObjectValidation;
 
 namespace SyncMaester.Core
 {
@@ -8,10 +9,14 @@ namespace SyncMaester.Core
     {
         public void Process(IDiff diff, IKoreFolderInfo source, IKoreFolderInfo destination)
         {
+            IsNotNull(diff);
+            IsNotNull(source);
+            IsNotNull(destination);
+
             if (diff.Type == DiffType.SourceNew)
             {
-                string sourceInnerFullPath = BuildRelativePath(diff.SourceFileInfo, source);
-                IKoreFileInfo target = new KoreFileInfo(Path.Combine(destination.FullName, sourceInnerFullPath));
+                var sourceInnerFullPath = BuildRelativePath(diff.SourceFileInfo, source);
+                var target = new KoreFileInfo(Path.Combine(destination.FullName, sourceInnerFullPath));
 
                 diff.SourceFileInfo.Copy(target);
             }
