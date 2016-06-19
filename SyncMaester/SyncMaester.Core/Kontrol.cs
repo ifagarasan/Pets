@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Kore.IO.Exceptions;
 using Kore.IO.Sync;
 using Kore.IO.Util;
@@ -23,6 +24,8 @@ namespace SyncMaester.Core
             _diffBuilder = diffBuilder;
             _folderDiffProcessor = folderDiffProcessor;
         }
+
+        public ISyncPair SyncPair => _settingsManager.Data.SyncPair;
 
         public void AddSyncPair(ISyncPair syncPair)
         {

@@ -88,7 +88,7 @@
             this.Controls.Add(this.sourcePath);
             this.Controls.Add(this.label1);
             this.Name = "MainWindow";
-            this.Text = "Sync Maester";
+            this.Text = "SyncMaester";
             this.ResumeLayout(false);
             this.PerformLayout();
 

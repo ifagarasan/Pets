@@ -20,14 +20,26 @@ namespace SyncMaester
     public partial class MainWindow : Form
     {
         private readonly Kontrol _kontrol;
+        private readonly IKoreFileInfo _settingsFileInfo;
+        private readonly IInterfaceManager _interfaceManager;
 
         public MainWindow()
         {
+            _settingsFileInfo = new KoreFileInfo("settings.bin");
+
             _kontrol = new Kontrol(new SettingsManager<ISettings>(new BinarySerializer<ISettings>()), 
                 new DiffBuilder(new FileScanner(new FileRetriever(new FileInfoProvider())), new FolderDiffer()),
                 new FolderDiffProcessor(new DiffProcessor()));
 
+            _kontrol.ReadSettings(_settingsFileInfo);
+
+            _interfaceManager = new InterfaceManager();
+
+            FormClosing += (sender, args) => { _kontrol.WriteSettings(_settingsFileInfo); };
+
             InitializeComponent();
+
+            _interfaceManager.DisplaySyncPairs(_kontrol, sourcePath, destinationPath);
         }
 
         private void bSync_Click(object sender, EventArgs e)
