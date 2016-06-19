@@ -1,6 +1,8 @@
 ﻿using System;
 using Kore.IO.Exceptions;
 using Kore.IO.Sync;
+using Kore.IO.Util;
+using Kore.Settings;
 using static Kore.Validation.ObjectValidation;
 
 namespace SyncMaester.Core
@@ -9,15 +11,15 @@ namespace SyncMaester.Core
     {
         private readonly IDiffBuilder _diffBuilder;
         private readonly IFolderDiffProcessor _folderDiffProcessor;
-        private readonly ISettings _settings;
+        private readonly ISettingsManager<ISettings> _settingsManager;
 
-        public Kontrol(ISettings settings, IDiffBuilder diffBuilder, IFolderDiffProcessor folderDiffProcessor)
+        public Kontrol(ISettingsManager<ISettings> settingsManager, IDiffBuilder diffBuilder, IFolderDiffProcessor folderDiffProcessor)
         {
-            IsNotNull(settings, nameof(settings));
+            IsNotNull(settingsManager, nameof(settingsManager));
             IsNotNull(diffBuilder, nameof(diffBuilder));
             IsNotNull(folderDiffProcessor, nameof(folderDiffProcessor));
 
-            _settings = settings;
+            _settingsManager = settingsManager;
             _diffBuilder = diffBuilder;
             _folderDiffProcessor = folderDiffProcessor;
         }
@@ -26,18 +28,18 @@ namespace SyncMaester.Core
         {
             IsNotNull(syncPair, nameof(syncPair));
 
-            _settings.SyncPair = syncPair;
+            _settingsManager.Data.SyncPair = syncPair;
         }
 
         public IFolderDiff BuildDiff()
         {
-            IsNotNull(_settings.SyncPair);
-            _settings.SyncPair.Destination.EnsureExists();
+            IsNotNull(_settingsManager.Data.SyncPair);
+            _settingsManager.Data.SyncPair.Destination.EnsureExists();
 
-            if (!_settings.SyncPair.Source.Exists)
+            if (!_settingsManager.Data.SyncPair.Source.Exists)
                 throw new NodeNotFoundException();
 
-            return _diffBuilder.Build(_settings.SyncPair);
+            return _diffBuilder.Build(_settingsManager.Data.SyncPair);
         }
 
         public void ProcessFolderDiff(IFolderDiff folderDiff)
@@ -45,6 +47,11 @@ namespace SyncMaester.Core
             IsNotNull(folderDiff);
 
             _folderDiffProcessor.Process(folderDiff);
+        }
+
+        public void WriteSettings(IKoreFileInfo destination)
+        {
+            _settingsManager.Write(destination);
         }
     }
 }

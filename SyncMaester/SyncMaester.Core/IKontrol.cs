@@ -1,4 +1,5 @@
 ﻿using Kore.IO.Sync;
+using Kore.IO.Util;
 
 namespace SyncMaester.Core
 {
@@ -7,5 +8,6 @@ namespace SyncMaester.Core
         void AddSyncPair(ISyncPair syncPair);
         IFolderDiff BuildDiff();
         void ProcessFolderDiff(IFolderDiff folderDiff);
+        void WriteSettings(IKoreFileInfo destination);
     }
 }

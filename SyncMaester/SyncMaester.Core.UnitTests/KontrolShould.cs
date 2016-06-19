@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Kore.IO.Exceptions;
 using Kore.IO.Sync;
 using Kore.IO.Util;
+using Kore.Settings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -19,6 +20,7 @@ namespace SyncMaester.Core.UnitTests
         Mock<IDiffBuilder> _mockDiffBuilder;
         Mock<IFolderDiffProcessor> _mockFolderDiffProcessor;
         IKontrol _kontrol;
+        Mock<ISettingsManager<ISettings>> _mockSettingsManager;
 
         Mock<IKoreFolderInfo> _mockSourceFolderInfo;
         Mock<IKoreFolderInfo> _mockDestinationFolderInfo;
@@ -46,16 +48,20 @@ namespace SyncMaester.Core.UnitTests
 
             _settings = new Settings {SyncPair = _mockSyncPair.Object};
 
+            _mockSettingsManager = new Mock<ISettingsManager<ISettings>>();
+            _mockSettingsManager.Setup(m => m.Data).Returns(_settings);
+
             _mockDiffBuilder = new Mock<IDiffBuilder>();
             _mockFolderDiffProcessor = new Mock<IFolderDiffProcessor>();
-            _kontrol = new Kontrol(_settings, _mockDiffBuilder.Object, _mockFolderDiffProcessor.Object);
+
+            _kontrol = new Kontrol(_mockSettingsManager.Object, _mockDiffBuilder.Object, _mockFolderDiffProcessor.Object);
         }
 
         #region Init
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void ThrowArgumentNullExceptionIfSettingsNull()
+        public void ThrowArgumentNullExceptionIfSettingsManagerNull()
         {
             _kontrol = new Kontrol(null, _mockDiffBuilder.Object, _mockFolderDiffProcessor.Object);
         }
@@ -64,14 +70,14 @@ namespace SyncMaester.Core.UnitTests
         [ExpectedException(typeof(ArgumentNullException))]
         public void ThrowArgumentNullExceptionIfDiffBuilderNull()
         {
-            _kontrol = new Kontrol(_settings, null, _mockFolderDiffProcessor.Object);
+            _kontrol = new Kontrol(_mockSettingsManager.Object, null, _mockFolderDiffProcessor.Object);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void ThrowArgumentNullExceptionIfDiffProcessorNull()
         {
-            _kontrol = new Kontrol(_settings, _mockDiffBuilder.Object, null);
+            _kontrol = new Kontrol(_mockSettingsManager.Object, _mockDiffBuilder.Object, null);
         }
 
         #endregion
@@ -166,6 +172,22 @@ namespace SyncMaester.Core.UnitTests
         public void ThrowArgumentNullExceptionIfFolderDiffIsNull()
         {
             _kontrol.ProcessFolderDiff(null);
+        }
+
+        #endregion
+
+        #region Settings
+
+        [TestMethod]
+        public void WriteSettings()
+        {
+            Mock<IKoreFileInfo> mockFileInfo = new Mock<IKoreFileInfo>();
+
+            _mockSettingsManager.Setup(m => m.Write(It.IsAny<IKoreFileInfo>()));
+
+            _kontrol.WriteSettings(mockFileInfo.Object);
+
+            _mockSettingsManager.Verify(m => m.Write(mockFileInfo.Object));
         }
 
         #endregion

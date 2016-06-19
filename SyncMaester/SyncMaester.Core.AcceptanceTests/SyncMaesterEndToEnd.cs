@@ -8,6 +8,8 @@ using Kore.IO.Retrievers;
 using Kore.IO.Scanners;
 using Kore.IO.Sync;
 using Kore.IO.Util;
+using Kore.Settings;
+using Kore.Settings.Serializers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static Kore.Dev.Util.IoUtil;
 
@@ -24,6 +26,7 @@ namespace SyncMaester.Core.AcceptanceTests
         IDiffBuilder _diffBuilder;
         IFolderDiffProcessor _folderDiffProcessor;
         IKontrol _kontrol;
+        private ISettingsManager<ISettings> _settingsManager;
 
         [TestInitialize]
         public void Setup()
@@ -33,8 +36,14 @@ namespace SyncMaester.Core.AcceptanceTests
 
             _diffBuilder = new DiffBuilder(new FileScanner(new FileRetriever(new FileInfoProvider())), new FolderDiffer());
             _folderDiffProcessor = new FolderDiffProcessor(new DiffProcessor());
-            _kontrol = new Kontrol(new Settings(), _diffBuilder, _folderDiffProcessor);
+            _settingsManager = new SettingsManager<ISettings>(new BinarySerializer<ISettings>())
+            {
+                Data = new Settings()
+            };
+            _kontrol = new Kontrol(_settingsManager, _diffBuilder, _folderDiffProcessor);
         }
+
+        #region File Moving
 
         [TestMethod]
         public void CopyANewSourceFile()
@@ -164,5 +173,28 @@ namespace SyncMaester.Core.AcceptanceTests
             Assert.AreEqual(DiffType.DestinationOrphan, folderDiff.Diffs[0].Type);
             Assert.IsFalse(destinationFileInfo.Exists);
         }
+
+        #endregion
+
+        #region Settings
+
+        [TestMethod]
+        public void WriteSettings()
+        {
+            var currentTest = Path.Combine(_currentWorkingFolder, "test5");
+
+            EnsureFolderExists(currentTest);
+
+            _settingsManager.Data.SyncPair.Source = new KoreFolderInfo(currentTest);
+            _settingsManager.Data.SyncPair.Destination = new KoreFolderInfo(currentTest);
+
+            var settingsFile = new KoreFileInfo(Path.Combine(currentTest, "settings.bin"));
+
+            _kontrol.WriteSettings(settingsFile);
+
+            Assert.IsTrue(settingsFile.Exists);
+        }
+
+        #endregion
     }
 }
