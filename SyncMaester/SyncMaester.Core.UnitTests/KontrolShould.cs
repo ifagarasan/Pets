@@ -8,6 +8,7 @@ using Kore.IO.Exceptions;
 using Kore.IO.Sync;
 using Kore.IO.Util;
 using Kore.Settings;
+using Kore.Settings.Serializers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -29,11 +30,15 @@ namespace SyncMaester.Core.UnitTests
         readonly string _destinationFolder = "efg";
 
         Mock<ISyncPair> _mockSyncPair;
-        
+
+        Mock<IKoreFileInfo> _mockFileInfo;
 
         [TestInitialize]
         public void Setup()
         {
+            _mockFileInfo = new Mock<IKoreFileInfo>();
+            _mockFileInfo.Setup(m => m.Exists).Returns(true);
+
             _mockSourceFolderInfo = new Mock<IKoreFolderInfo>();
             _mockSourceFolderInfo.Setup(m => m.FullName).Returns(_sourceFolder);
             _mockSourceFolderInfo.Setup(m => m.Exists).Returns(true);
@@ -50,6 +55,7 @@ namespace SyncMaester.Core.UnitTests
 
             _mockSettingsManager = new Mock<ISettingsManager<ISettings>>();
             _mockSettingsManager.Setup(m => m.Data).Returns(_settings);
+            _mockSettingsManager.Setup(m => m.Write(It.IsAny<IKoreFileInfo>()));
 
             _mockDiffBuilder = new Mock<IDiffBuilder>();
             _mockFolderDiffProcessor = new Mock<IFolderDiffProcessor>();
@@ -181,13 +187,47 @@ namespace SyncMaester.Core.UnitTests
         [TestMethod]
         public void WriteSettings()
         {
-            Mock<IKoreFileInfo> mockFileInfo = new Mock<IKoreFileInfo>();
+            _kontrol.WriteSettings(_mockFileInfo.Object);
 
-            _mockSettingsManager.Setup(m => m.Write(It.IsAny<IKoreFileInfo>()));
+            _mockSettingsManager.Verify(m => m.Write(_mockFileInfo.Object));
+        }
 
-            _kontrol.WriteSettings(mockFileInfo.Object);
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ValidateFileInfoOnWriteSettings()
+        {
+            _kontrol.WriteSettings(null);
+        }
 
-            _mockSettingsManager.Verify(m => m.Write(mockFileInfo.Object));
+        [TestMethod]
+        public void ReadSettings()
+        {
+            _kontrol.ReadSettings(_mockFileInfo.Object);
+
+            _mockSettingsManager.Verify(m => m.Read(_mockFileInfo.Object));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ValidateFileInfoOnReadSettings()
+        {
+            _kontrol.ReadSettings(null);
+        }
+
+        [TestMethod]
+        public void CreateNewInstanceOfSettingsIfFileDoesNotExistOnReadSettings()
+        {
+            ISettingsManager<ISettings> settingsManager = new SettingsManager<ISettings>(new BinarySerializer<ISettings>());
+            
+            _kontrol = new Kontrol(settingsManager, _mockDiffBuilder.Object, _mockFolderDiffProcessor.Object);
+
+            _mockFileInfo.Setup(m => m.Exists).Returns(false);
+
+            _kontrol.ReadSettings(_mockFileInfo.Object);
+
+            _mockSettingsManager.Verify(m => m.Read(It.IsAny<IKoreFileInfo>()), Times.Never);
+
+            Assert.IsNotNull(settingsManager.Data);
         }
 
         #endregion

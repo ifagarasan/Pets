@@ -195,6 +195,36 @@ namespace SyncMaester.Core.AcceptanceTests
             Assert.IsTrue(settingsFile.Exists);
         }
 
+        public void ReadSettings()
+        {
+            var currentTest = Path.Combine(_currentWorkingFolder, "test6");
+
+            EnsureFolderExists(currentTest);
+
+            var sourceFolder = "C:\\Music";
+            var destinationFolder = "D:\\Backups\\Music";
+
+            _settingsManager.Data.SyncPair.Source = new KoreFolderInfo(sourceFolder);
+            _settingsManager.Data.SyncPair.Destination = new KoreFolderInfo(destinationFolder);
+
+            var settingsFile = new KoreFileInfo(Path.Combine(currentTest, "settings.bin"));
+
+            _kontrol.WriteSettings(settingsFile);
+
+            var settingsManager = new SettingsManager<ISettings>(new BinarySerializer<ISettings>());
+
+            var kontrol = new Kontrol(settingsManager,
+                new DiffBuilder(new FileScanner(new FileRetriever(new FileInfoProvider())), new FolderDiffer()),
+                new FolderDiffProcessor(new DiffProcessor()));
+
+            kontrol.ReadSettings(settingsFile);
+
+            Assert.AreEqual(sourceFolder, settingsManager.Data.SyncPair.Source);
+            Assert.AreEqual(destinationFolder, settingsManager.Data.SyncPair.Destination);
+
+            Assert.IsTrue(settingsFile.Exists);
+        }
+
         #endregion
     }
 }

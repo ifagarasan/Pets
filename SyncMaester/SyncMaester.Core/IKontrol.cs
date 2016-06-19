@@ -9,5 +9,6 @@ namespace SyncMaester.Core
         IFolderDiff BuildDiff();
         void ProcessFolderDiff(IFolderDiff folderDiff);
         void WriteSettings(IKoreFileInfo destination);
+        void ReadSettings(IKoreFileInfo source);
     }
 }

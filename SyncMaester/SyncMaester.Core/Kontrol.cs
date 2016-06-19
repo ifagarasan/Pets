@@ -51,7 +51,19 @@ namespace SyncMaester.Core
 
         public void WriteSettings(IKoreFileInfo destination)
         {
+            IsNotNull(destination);
+
             _settingsManager.Write(destination);
+        }
+
+        public void ReadSettings(IKoreFileInfo source)
+        {
+            IsNotNull(source);
+
+            if (!source.Exists)
+                _settingsManager.Data = new Settings();
+            else
+                _settingsManager.Read(source);
         }
     }
 }
