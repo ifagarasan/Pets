@@ -5,13 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SyncMaester"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
+        Title="SyncMaester" Height="350" Width="525">
+    <Grid x:Name="main">
         <Button x:Name="sync" Content="Sync" HorizontalAlignment="Left" Margin="382,46,0,0" VerticalAlignment="Top" Width="111" RenderTransformOrigin="0.347,-2.65" Height="73" Click="sync_Click"/>
         <Label x:Name="label" Content="Source:" HorizontalAlignment="Left" Margin="50,46,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="sourcePath" HorizontalAlignment="Left" Height="23" Margin="124,49,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="233"/>
+        <TextBox x:Name="sourcePath" HorizontalAlignment="Left" Height="23" Margin="124,49,0,0" TextWrapping="Wrap" Text="{Binding Path=Source.FullName}" VerticalAlignment="Top" Width="233"/>
         <Label x:Name="label_Copy" Content="Destination:" HorizontalAlignment="Left" Margin="50,93,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="destinationPath" HorizontalAlignment="Left" Height="23" Margin="124,96,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="233"/>
-
+        <TextBox x:Name="destinationPath" HorizontalAlignment="Left" Height="23" Margin="124,96,0,0" TextWrapping="Wrap" Text="{Binding Path=Destination.FullName}" VerticalAlignment="Top" Width="233" />
     </Grid>
 </Window>

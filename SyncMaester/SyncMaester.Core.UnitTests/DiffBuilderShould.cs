@@ -61,12 +61,6 @@ namespace SyncMaester.Core.UnitTests
             var source = "src";
             var destination = "dest";
 
-            var mockSourceFolderInfo = new Mock<IKoreFolderInfo>();
-            mockSourceFolderInfo.Setup(m => m.FullName).Returns(source);
-
-            var mockDestinationFolderInfo = new Mock<IKoreFolderInfo>();
-            mockDestinationFolderInfo.Setup(m => m.FullName).Returns(destination);
-
             var sourceScanResult = new Mock<IFileScanResult>();
             var destinationScanResult = new Mock<IFileScanResult>();
 
@@ -75,8 +69,8 @@ namespace SyncMaester.Core.UnitTests
 
             var mockSyncPair = new Mock<ISyncPair>();
 
-            mockSyncPair.Setup(m => m.Source).Returns(mockSourceFolderInfo.Object);
-            mockSyncPair.Setup(m => m.Destination).Returns(mockDestinationFolderInfo.Object);
+            mockSyncPair.Setup(m => m.Source).Returns(source);
+            mockSyncPair.Setup(m => m.Destination).Returns(destination);
 
             var mockFolderDIff = new Mock<IFolderDiff>();
             _mockFolderDiffer.Setup(m => m.BuildDiff(It.IsAny<IFileScanResult>(), It.IsAny<IFileScanResult>())).Returns(mockFolderDIff.Object);

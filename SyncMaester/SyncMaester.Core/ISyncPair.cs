@@ -4,7 +4,8 @@ namespace SyncMaester.Core
 {
     public interface ISyncPair
     {
-        IKoreFolderInfo Source{ get; set; }
-        IKoreFolderInfo Destination { get; set; }
+        string Source{ get; set; }
+
+        string Destination { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Kore.IO.Scanners;
 using Kore.IO.Sync;
+using Kore.IO.Util;
 using static Kore.Validation.ObjectValidation;
 
 namespace SyncMaester.Core
@@ -24,8 +25,8 @@ namespace SyncMaester.Core
         {
             IsNotNull(syncPair, nameof(syncPair));
 
-            var sourceScan = _fileScanner.Scan(syncPair.Source.FullName);
-            var destinationScan = _fileScanner.Scan(syncPair.Destination.FullName);
+            var sourceScan = _fileScanner.Scan(syncPair.Source);
+            var destinationScan = _fileScanner.Scan(syncPair.Destination);
 
             return _folderDiffer.BuildDiff(sourceScan, destinationScan);
         }

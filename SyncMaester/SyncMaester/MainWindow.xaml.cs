@@ -29,7 +29,6 @@ namespace SyncMaester
     {
         private readonly Kontrol _kontrol;
         private readonly IKoreFileInfo _settingsFileInfo;
-        private readonly IInterfaceManager _interfaceManager;
 
         public MainWindow()
         {
@@ -41,11 +40,16 @@ namespace SyncMaester
 
             _kontrol.ReadSettings(_settingsFileInfo);
 
-            _interfaceManager = new InterfaceManager();
-
             InitializeComponent();
 
-            _interfaceManager.DisplaySyncPairs(_kontrol, sourcePath, destinationPath);
+            DataContext = _kontrol.SyncPair;
+
+            //sourcePath.DataContext = _kontrol.SyncPair;
+            //destinationPath.DataContext = _kontrol.SyncPair;
+
+            //sourcePath.Text = "{Binding Path=Source}";
+
+            //_interfaceManager.DisplaySyncPairs(_kontrol, sourcePath, destinationPath);
 
             Closing += (sender, args) => { _kontrol.WriteSettings(_settingsFileInfo); };
         }
@@ -54,8 +58,8 @@ namespace SyncMaester
         {
             _kontrol.AddSyncPair(new SyncPair
             {
-                Source = new KoreFolderInfo(sourcePath.Text),
-                Destination = new KoreFolderInfo(destinationPath.Text)
+                Source = sourcePath.Text,
+                Destination = destinationPath.Text
             });
 
             var diff = _kontrol.BuildDiff();

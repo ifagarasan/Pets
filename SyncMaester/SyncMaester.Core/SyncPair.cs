@@ -6,8 +6,8 @@ namespace SyncMaester.Core
     [Serializable]
     public class SyncPair : ISyncPair
     {
-        public IKoreFolderInfo Source { get; set; }
+        public string Source { get; set; }
 
-        public IKoreFolderInfo Destination { get; set; }
+        public string Destination { get; set; }
     }
 }

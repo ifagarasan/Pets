@@ -23,9 +23,6 @@ namespace SyncMaester.Core.UnitTests
         IKontrol _kontrol;
         Mock<ISettingsManager<ISettings>> _mockSettingsManager;
 
-        Mock<IKoreFolderInfo> _mockSourceFolderInfo;
-        Mock<IKoreFolderInfo> _mockDestinationFolderInfo;
-
         readonly string _sourceFolder = "abc";
         readonly string _destinationFolder = "efg";
 
@@ -39,17 +36,9 @@ namespace SyncMaester.Core.UnitTests
             _mockFileInfo = new Mock<IKoreFileInfo>();
             _mockFileInfo.Setup(m => m.Exists).Returns(true);
 
-            _mockSourceFolderInfo = new Mock<IKoreFolderInfo>();
-            _mockSourceFolderInfo.Setup(m => m.FullName).Returns(_sourceFolder);
-            _mockSourceFolderInfo.Setup(m => m.Exists).Returns(true);
-
-            _mockDestinationFolderInfo = new Mock<IKoreFolderInfo>();
-            _mockDestinationFolderInfo.Setup(m => m.FullName).Returns(_destinationFolder);
-            _mockDestinationFolderInfo.Setup(m => m.Exists).Returns(true);
-
             _mockSyncPair = new Mock<ISyncPair>();
-            _mockSyncPair.Setup(m => m.Source).Returns(_mockSourceFolderInfo.Object);
-            _mockSyncPair.Setup(m => m.Destination).Returns(_mockDestinationFolderInfo.Object);
+            _mockSyncPair.Setup(m => m.Source).Returns(_sourceFolder);
+            _mockSyncPair.Setup(m => m.Destination).Returns(_destinationFolder);
 
             _settings = new Settings {SyncPair = _mockSyncPair.Object};
 
@@ -95,8 +84,8 @@ namespace SyncMaester.Core.UnitTests
         {
             ISyncPair syncPair = new SyncPair
             {
-                Source = _mockSourceFolderInfo.Object,
-                Destination = _mockDestinationFolderInfo.Object
+                Source = _sourceFolder,
+                Destination = _destinationFolder
             };
 
             _kontrol.AddSyncPair(syncPair);
@@ -125,28 +114,9 @@ namespace SyncMaester.Core.UnitTests
         }
 
         [TestMethod]
-        public void CreateDestinationFolderIfItDoesNotExist()
-        {
-            _mockDestinationFolderInfo.Setup(m => m.EnsureExists());
-
-            _kontrol.BuildDiff();
-
-            _mockDestinationFolderInfo.Verify(m => m.EnsureExists(), Times.Once);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(NodeNotFoundException))]
-        public void ValidateSourceFolderExistsOnBUild()
-        {
-            _mockSourceFolderInfo.Setup(m => m.Exists).Returns(false);
-
-            _kontrol.BuildDiff();
-        }
-
-        [TestMethod]
         public void CallBuildDiffOnDiffBuilder()
         {
-            _settings.SyncPair = new SyncPair { Source = _mockSourceFolderInfo.Object, Destination = _mockDestinationFolderInfo.Object };
+            _settings.SyncPair = new SyncPair { Source = _sourceFolder, Destination = _destinationFolder };
 
             var mockFolderDiff = new Mock<IFolderDiff>();
 

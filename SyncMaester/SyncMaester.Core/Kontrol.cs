@@ -37,10 +37,6 @@ namespace SyncMaester.Core
         public IFolderDiff BuildDiff()
         {
             IsNotNull(_settingsManager.Data.SyncPair);
-            _settingsManager.Data.SyncPair.Destination.EnsureExists();
-
-            if (!_settingsManager.Data.SyncPair.Source.Exists)
-                throw new NodeNotFoundException();
 
             return _diffBuilder.Build(_settingsManager.Data.SyncPair);
         }

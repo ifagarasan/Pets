@@ -60,8 +60,8 @@ namespace SyncMaester.Core.AcceptanceTests
 
             var syncPair = new SyncPair
             {
-                Source = new KoreFolderInfo(_sourceFolder),
-                Destination = new KoreFolderInfo(_destinationFolder)
+                Source = _sourceFolder,
+                Destination = _destinationFolder
             };
 
             _kontrol.AddSyncPair(syncPair);
@@ -96,8 +96,8 @@ namespace SyncMaester.Core.AcceptanceTests
 
             var syncPair = new SyncPair
             {
-                Source = new KoreFolderInfo(_sourceFolder),
-                Destination = new KoreFolderInfo(_destinationFolder)
+                Source = _sourceFolder,
+                Destination = _destinationFolder
             };
 
             _kontrol.AddSyncPair(syncPair);
@@ -130,8 +130,8 @@ namespace SyncMaester.Core.AcceptanceTests
 
             var syncPair = new SyncPair
             {
-                Source = new KoreFolderInfo(_sourceFolder),
-                Destination = new KoreFolderInfo(_destinationFolder)
+                Source = _sourceFolder,
+                Destination = _destinationFolder
             };
 
             _kontrol.AddSyncPair(syncPair);
@@ -160,8 +160,8 @@ namespace SyncMaester.Core.AcceptanceTests
 
             var syncPair = new SyncPair
             {
-                Source = new KoreFolderInfo(_sourceFolder),
-                Destination = new KoreFolderInfo(_destinationFolder)
+                Source = _sourceFolder,
+                Destination = _destinationFolder
             };
 
             _kontrol.AddSyncPair(syncPair);
@@ -185,8 +185,8 @@ namespace SyncMaester.Core.AcceptanceTests
 
             EnsureFolderExists(currentTest);
 
-            _settingsManager.Data.SyncPair.Source = new KoreFolderInfo(currentTest);
-            _settingsManager.Data.SyncPair.Destination = new KoreFolderInfo(currentTest);
+            _settingsManager.Data.SyncPair.Source = currentTest;
+            _settingsManager.Data.SyncPair.Destination = currentTest;
 
             var settingsFile = new KoreFileInfo(Path.Combine(currentTest, "settings.bin"));
 
@@ -204,8 +204,8 @@ namespace SyncMaester.Core.AcceptanceTests
             var sourceFolder = "C:\\Music";
             var destinationFolder = "D:\\Backups\\Music";
 
-            _settingsManager.Data.SyncPair.Source = new KoreFolderInfo(sourceFolder);
-            _settingsManager.Data.SyncPair.Destination = new KoreFolderInfo(destinationFolder);
+            _settingsManager.Data.SyncPair.Source = sourceFolder;
+            _settingsManager.Data.SyncPair.Destination = destinationFolder;
 
             var settingsFile = new KoreFileInfo(Path.Combine(currentTest, "settings.bin"));
 
