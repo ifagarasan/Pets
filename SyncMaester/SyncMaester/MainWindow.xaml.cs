@@ -40,9 +40,10 @@ namespace SyncMaester
 
             _kontrol.ReadSettings(_settingsFileInfo);
 
-            InitializeComponent();
 
             DataContext = _kontrol.SyncPair;
+
+            InitializeComponent();
 
             //sourcePath.DataContext = _kontrol.SyncPair;
             //destinationPath.DataContext = _kontrol.SyncPair;
