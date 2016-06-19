@@ -1,4 +1,4 @@
-using System.Windows.Forms;
+using System.Windows.Controls;
 using SyncMaester.Core;
 
 namespace SyncMaester

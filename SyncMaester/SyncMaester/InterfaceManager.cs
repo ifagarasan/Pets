@@ -1,4 +1,4 @@
-﻿using System.Windows.Forms;
+﻿using System.Windows.Controls;
 using SyncMaester.Core;
 
 namespace SyncMaester
@@ -7,8 +7,8 @@ namespace SyncMaester
     {
         public void DisplaySyncPairs(Kontrol kontrol, TextBox sourcePath, TextBox destinationPath)
         {
-            sourcePath.Text = kontrol.SyncPair.Source.FullName;
-            destinationPath.Text = kontrol.SyncPair.Destination.FullName;
+            sourcePath.Text = kontrol.SyncPair.Source?.FullName;
+            destinationPath.Text = kontrol.SyncPair.Destination?.FullName;
         }
     }
 }
