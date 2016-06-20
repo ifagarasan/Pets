@@ -16,7 +16,7 @@ using static Kore.Dev.Util.IoUtil;
 namespace SyncMaester.Core.AcceptanceTests
 {
     [TestClass]
-    public class SyncMaesterEndToEnd
+    public class SyncMaesterShould
     {
         private static readonly string _currentWorkingFolder = Path.Combine(TestRoot, DateTime.Now.Ticks.ToString());
         private string _destinationFolder;
@@ -172,6 +172,54 @@ namespace SyncMaester.Core.AcceptanceTests
 
             Assert.AreEqual(DiffType.DestinationOrphan, folderDiff.Diffs[0].Type);
             Assert.IsFalse(destinationFileInfo.Exists);
+        }
+
+        [TestMethod]
+        public void SupportMultipleSyncPairs()
+        {
+            var currentTest = Path.Combine(_currentWorkingFolder, "test-multiple-sync-pairs");
+
+            var sourceFolder1 = Path.Combine(currentTest, "src1");
+            EnsureFolderExists(sourceFolder1);
+
+            var sourceFolder2 = Path.Combine(currentTest, "src2");
+            EnsureFolderExists(sourceFolder2);
+
+            var destinationFolder1 = Path.Combine(currentTest, "dest1");
+            EnsureFolderExists(destinationFolder1);
+
+            var destinationFolder2 = Path.Combine(currentTest, "dest2");
+            EnsureFolderExists(destinationFolder2);
+
+            var fileName1 = "file1.txt";
+            var sourceFileInfo1 = new KoreFileInfo(Path.Combine(sourceFolder1, fileName1));
+            sourceFileInfo1.EnsureExists();
+
+            var fileName2 = "file2.exe";
+            var sourceFileInfo2 = new KoreFileInfo(Path.Combine(sourceFolder2, fileName2));
+            sourceFileInfo2.EnsureExists();
+
+            _kontrol.AddSyncPair(new SyncPair
+            {
+                Source = sourceFolder1,
+                Destination = destinationFolder1
+            });
+
+            _kontrol.AddSyncPair(new SyncPair
+            {
+                Source = sourceFolder2,
+                Destination = destinationFolder2
+            });
+
+            var folderDiff = _kontrol.BuildDiff();
+
+            _kontrol.ProcessFolderDiff(folderDiff);
+
+            var destinationFileInfo1 = new KoreFileInfo(Path.Combine(destinationFolder1, fileName1));
+            var destinationFileInfo2 = new KoreFileInfo(Path.Combine(destinationFolder2, fileName2));
+
+            Assert.IsTrue(destinationFileInfo1.Exists);
+            Assert.IsTrue(destinationFileInfo2.Exists);
         }
 
         #endregion
