@@ -8,9 +8,9 @@ namespace SyncMaester.Core
     {
         public Settings()
         {
-            SyncPair = new SyncPair();
+            SyncPairs = new List<ISyncPair>();
         }
 
-        public ISyncPair SyncPair { get; set; }
+        public List<ISyncPair> SyncPairs { get; set; }
     }
 }

@@ -64,15 +64,16 @@ namespace SyncMaester.Core.AcceptanceTests
                 Destination = _destinationFolder
             };
 
-            _kontrol.AddSyncPair(syncPair);
+            _kontrol.Settings.SyncPairs.Add(syncPair);
 
-            var folderDiff = _kontrol.BuildDiff();
+            var folderDiffs = _kontrol.BuildDiff();
 
-            _kontrol.ProcessFolderDiff(folderDiff);
+            _kontrol.ProcessFolderDiff(folderDiffs);
 
             var destinationFileInfo = new KoreFileInfo(Path.Combine(_destinationFolder, _primaryTestFileName));
 
-            Assert.AreEqual(DiffType.SourceNew, folderDiff.Diffs[0].Type);
+            Assert.AreEqual(1, folderDiffs.Count);
+            Assert.AreEqual(DiffType.SourceNew, folderDiffs[0].Diffs[0].Type);
             Assert.IsTrue(destinationFileInfo.Exists);
         }
 
@@ -100,13 +101,14 @@ namespace SyncMaester.Core.AcceptanceTests
                 Destination = _destinationFolder
             };
 
-            _kontrol.AddSyncPair(syncPair);
+            _kontrol.Settings.SyncPairs.Add(syncPair);
 
-            var folderDiff = _kontrol.BuildDiff();
+            var folderDiffs = _kontrol.BuildDiff();
 
-            _kontrol.ProcessFolderDiff(folderDiff);
+            _kontrol.ProcessFolderDiff(folderDiffs);
 
-            Assert.AreEqual(DiffType.SourceNewer, folderDiff.Diffs[0].Type);
+            Assert.AreEqual(1, folderDiffs.Count);
+            Assert.AreEqual(DiffType.SourceNewer, folderDiffs[0].Diffs[0].Type);
             Assert.AreEqual(now, destinationFileInfo.LastWriteTime);
         }
 
@@ -134,13 +136,14 @@ namespace SyncMaester.Core.AcceptanceTests
                 Destination = _destinationFolder
             };
 
-            _kontrol.AddSyncPair(syncPair);
+            _kontrol.Settings.SyncPairs.Add(syncPair);
 
-            var folderDiff = _kontrol.BuildDiff();
+            var folderDiffs = _kontrol.BuildDiff();
 
-            _kontrol.ProcessFolderDiff(folderDiff);
+            _kontrol.ProcessFolderDiff(folderDiffs);
 
-            Assert.AreEqual(DiffType.SourceOlder, folderDiff.Diffs[0].Type);
+            Assert.AreEqual(1, folderDiffs.Count);
+            Assert.AreEqual(DiffType.SourceOlder, folderDiffs[0].Diffs[0].Type);
             Assert.AreEqual(now, sourceFileInfo.LastWriteTime);
         }
 
@@ -164,13 +167,14 @@ namespace SyncMaester.Core.AcceptanceTests
                 Destination = _destinationFolder
             };
 
-            _kontrol.AddSyncPair(syncPair);
+            _kontrol.Settings.SyncPairs.Add(syncPair);
 
-            var folderDiff = _kontrol.BuildDiff();
+            var folderDiffs = _kontrol.BuildDiff();
 
-            _kontrol.ProcessFolderDiff(folderDiff);
+            _kontrol.ProcessFolderDiff(folderDiffs);
 
-            Assert.AreEqual(DiffType.DestinationOrphan, folderDiff.Diffs[0].Type);
+            Assert.AreEqual(1, folderDiffs.Count);
+            Assert.AreEqual(DiffType.DestinationOrphan, folderDiffs[0].Diffs[0].Type);
             Assert.IsFalse(destinationFileInfo.Exists);
         }
 
@@ -199,21 +203,21 @@ namespace SyncMaester.Core.AcceptanceTests
             var sourceFileInfo2 = new KoreFileInfo(Path.Combine(sourceFolder2, fileName2));
             sourceFileInfo2.EnsureExists();
 
-            _kontrol.AddSyncPair(new SyncPair
+            _kontrol.Settings.SyncPairs.Add(new SyncPair
             {
                 Source = sourceFolder1,
                 Destination = destinationFolder1
             });
 
-            _kontrol.AddSyncPair(new SyncPair
+            _kontrol.Settings.SyncPairs.Add(new SyncPair
             {
                 Source = sourceFolder2,
                 Destination = destinationFolder2
             });
 
-            var folderDiff = _kontrol.BuildDiff();
+            var folderDiffs = _kontrol.BuildDiff();
 
-            _kontrol.ProcessFolderDiff(folderDiff);
+            _kontrol.ProcessFolderDiff(folderDiffs);
 
             var destinationFileInfo1 = new KoreFileInfo(Path.Combine(destinationFolder1, fileName1));
             var destinationFileInfo2 = new KoreFileInfo(Path.Combine(destinationFolder2, fileName2));
@@ -233,8 +237,7 @@ namespace SyncMaester.Core.AcceptanceTests
 
             EnsureFolderExists(currentTest);
 
-            _settingsManager.Data.SyncPair.Source = currentTest;
-            _settingsManager.Data.SyncPair.Destination = currentTest;
+            _settingsManager.Data.SyncPairs.Add(new SyncPair { Source = currentTest, Destination = currentTest});
 
             var settingsFile = new KoreFileInfo(Path.Combine(currentTest, "settings.bin"));
 
@@ -252,8 +255,7 @@ namespace SyncMaester.Core.AcceptanceTests
             var sourceFolder = "C:\\Music";
             var destinationFolder = "D:\\Backups\\Music";
 
-            _settingsManager.Data.SyncPair.Source = sourceFolder;
-            _settingsManager.Data.SyncPair.Destination = destinationFolder;
+            _settingsManager.Data.SyncPairs.Add(new SyncPair { Source = currentTest, Destination = currentTest });
 
             var settingsFile = new KoreFileInfo(Path.Combine(currentTest, "settings.bin"));
 
@@ -267,8 +269,11 @@ namespace SyncMaester.Core.AcceptanceTests
 
             kontrol.ReadSettings(settingsFile);
 
-            Assert.AreEqual(sourceFolder, settingsManager.Data.SyncPair.Source);
-            Assert.AreEqual(destinationFolder, settingsManager.Data.SyncPair.Destination);
+            Assert.IsNotNull(settingsManager.Data);
+            Assert.IsNotNull(settingsManager.Data.SyncPairs);
+            Assert.AreEqual(1, settingsManager.Data.SyncPairs.Count);
+            Assert.AreEqual(sourceFolder, settingsManager.Data.SyncPairs[0].Source);
+            Assert.AreEqual(destinationFolder, settingsManager.Data.SyncPairs[0].Destination);
 
             Assert.IsTrue(settingsFile.Exists);
         }

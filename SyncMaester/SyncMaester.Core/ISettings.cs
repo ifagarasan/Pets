@@ -4,6 +4,6 @@ namespace SyncMaester.Core
 {
     public interface ISettings
     {
-        ISyncPair SyncPair { get; set; }
+        List<ISyncPair> SyncPairs { get; set; }
     }
 }

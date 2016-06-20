@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Kore.IO.Exceptions;
 using Kore.IO.Sync;
 using Kore.IO.Util;
@@ -25,27 +26,21 @@ namespace SyncMaester.Core
             _folderDiffProcessor = folderDiffProcessor;
         }
 
-        public ISyncPair SyncPair => _settingsManager.Data.SyncPair;
+        public IReadOnlyCollection<ISyncPair> SyncPairs => _settingsManager.Data.SyncPairs.AsReadOnly();
 
         public void AddSyncPair(ISyncPair syncPair)
         {
             IsNotNull(syncPair, nameof(syncPair));
 
-            _settingsManager.Data.SyncPair = syncPair;
+            _settingsManager.Data.SyncPairs.Add(syncPair);
         }
 
-        public IFolderDiff BuildDiff()
+        public void ProcessFolderDiff(IList<IFolderDiff> folderDiffs)
         {
-            IsNotNull(_settingsManager.Data.SyncPair);
+            IsNotNull(folderDiffs);
 
-            return _diffBuilder.Build(_settingsManager.Data.SyncPair);
-        }
-
-        public void ProcessFolderDiff(IFolderDiff folderDiff)
-        {
-            IsNotNull(folderDiff);
-
-            _folderDiffProcessor.Process(folderDiff);
+            foreach (var folderDiff in folderDiffs)
+                _folderDiffProcessor.Process(folderDiff);
         }
 
         public void WriteSettings(IKoreFileInfo destination)
@@ -63,6 +58,15 @@ namespace SyncMaester.Core
                 _settingsManager.Data = new Settings();
             else
                 _settingsManager.Read(source);
+        }
+
+        public ISettings Settings => _settingsManager.Data;
+
+        public IList<IFolderDiff> BuildDiff()
+        {
+            IsNotNull(_settingsManager.Data.SyncPairs);
+
+            return _settingsManager.Data.SyncPairs.Select(s => _diffBuilder.Build(s)).ToList();
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Castle.Components.DictionaryAdapter;
 using Kore.IO.Exceptions;
 using Kore.IO.Sync;
 using Kore.IO.Util;
@@ -40,7 +41,7 @@ namespace SyncMaester.Core.UnitTests
             _mockSyncPair.Setup(m => m.Source).Returns(_sourceFolder);
             _mockSyncPair.Setup(m => m.Destination).Returns(_destinationFolder);
 
-            _settings = new Settings {SyncPair = _mockSyncPair.Object};
+            _settings = new Settings();
 
             _mockSettingsManager = new Mock<ISettingsManager<ISettings>>();
             _mockSettingsManager.Setup(m => m.Data).Returns(_settings);
@@ -80,7 +81,7 @@ namespace SyncMaester.Core.UnitTests
         #region AddSyncPair
 
         [TestMethod]
-        public void SetSyncPairToProvided()
+        public void AddSyncPairToList()
         {
             ISyncPair syncPair = new SyncPair
             {
@@ -88,16 +89,9 @@ namespace SyncMaester.Core.UnitTests
                 Destination = _destinationFolder
             };
 
-            _kontrol.AddSyncPair(syncPair);
+            _kontrol.Settings.SyncPairs.Add(syncPair);
 
-            Assert.AreSame(syncPair, _settings.SyncPair);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ThrowArgumentNullExceptionIfSyncPairIsNull()
-        {
-            _kontrol.AddSyncPair(null);
+            Assert.AreSame(syncPair, _settings.SyncPairs.Last());
         }
 
         #endregion
@@ -108,25 +102,34 @@ namespace SyncMaester.Core.UnitTests
         [ExpectedException(typeof(ArgumentNullException))]
         public void ValidateSettingsSyncPairOnBuildDiff()
         {
-            _settings.SyncPair = null;
+            _settings.SyncPairs = null;
 
             _kontrol.BuildDiff();
         }
 
         [TestMethod]
-        public void CallBuildDiffOnDiffBuilder()
+        public void BuildDiff()
         {
-            _settings.SyncPair = new SyncPair { Source = _sourceFolder, Destination = _destinationFolder };
+            var syncPair1 = new SyncPair { Source = _sourceFolder, Destination = _destinationFolder };
+            var syncPair2 = new SyncPair { Source = _sourceFolder, Destination = _destinationFolder };
 
-            var mockFolderDiff = new Mock<IFolderDiff>();
+            _settings.SyncPairs.Add(syncPair1);
+            _settings.SyncPairs.Add(syncPair2);
 
-            _mockDiffBuilder.Setup(m => m.Build(It.IsAny<ISyncPair>())).Returns(mockFolderDiff.Object);
+            var mockFolderDiff1 = new Mock<IFolderDiff>();
+            var mockFolderDiff2 = new Mock<IFolderDiff>();
 
-            var actualDiff = _kontrol.BuildDiff();
+            _mockDiffBuilder.Setup(m => m.Build(syncPair1)).Returns(mockFolderDiff1.Object);
+            _mockDiffBuilder.Setup(m => m.Build(syncPair2)).Returns(mockFolderDiff2.Object);
 
-            _mockDiffBuilder.Verify(m => m.Build(_settings.SyncPair));
+            var diffs = _kontrol.BuildDiff();
 
-            Assert.AreSame(mockFolderDiff.Object, actualDiff);
+            _mockDiffBuilder.Verify(m => m.Build(syncPair1));
+            _mockDiffBuilder.Verify(m => m.Build(syncPair2));
+
+            Assert.AreEqual(2, diffs.Count);
+            Assert.AreSame(mockFolderDiff1.Object, diffs[0]);
+            Assert.AreSame(mockFolderDiff2.Object, diffs[1]);
         }
 
         #endregion
@@ -138,7 +141,7 @@ namespace SyncMaester.Core.UnitTests
         {
             var mockFolderDiff = new Mock<IFolderDiff>();
 
-            _kontrol.ProcessFolderDiff(mockFolderDiff.Object);
+            _kontrol.ProcessFolderDiff(new List<IFolderDiff> { mockFolderDiff.Object });
 
             _mockFolderDiffProcessor.Verify(m => m.Process(mockFolderDiff.Object));
         }
@@ -153,6 +156,12 @@ namespace SyncMaester.Core.UnitTests
         #endregion
 
         #region Settings
+
+        [TestMethod]
+        public void ExposeSettings()
+        {
+            Assert.AreSame(_settings, _kontrol.Settings);
+        }
 
         [TestMethod]
         public void WriteSettings()

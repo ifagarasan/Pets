@@ -40,34 +40,31 @@ namespace SyncMaester
 
             _kontrol.ReadSettings(_settingsFileInfo);
 
-
-            DataContext = _kontrol.SyncPair;
-
             InitializeComponent();
-
-            //sourcePath.DataContext = _kontrol.SyncPair;
-            //destinationPath.DataContext = _kontrol.SyncPair;
-
-            //sourcePath.Text = "{Binding Path=Source}";
-
-            //_interfaceManager.DisplaySyncPairs(_kontrol, sourcePath, destinationPath);
 
             Closing += (sender, args) => { _kontrol.WriteSettings(_settingsFileInfo); };
         }
 
         private void sync_Click(object sender, RoutedEventArgs e)
         {
-            _kontrol.AddSyncPair(new SyncPair
+            if (_kontrol.SyncPairs == null || _kontrol.SyncPairs.Count == 0)
             {
-                Source = sourcePath.Text,
-                Destination = destinationPath.Text
-            });
+                MessageBox.Show("Nothing to sync");
+                return;
+            }
 
-            var diff = _kontrol.BuildDiff();
+            var diffs = _kontrol.BuildDiff();
 
-            _kontrol.ProcessFolderDiff(diff);
+            _kontrol.ProcessFolderDiff(diffs);
 
-            MessageBox.Show($"Processed {diff.Diffs.Count} diffs");
+            MessageBox.Show($"Processed {diffs[0].Diffs.Count} diffs");
+        }
+
+        private void syncManager_Click(object sender, RoutedEventArgs e)
+        {
+            var sm = new SyncManager(_kontrol.Settings);
+
+            sm.ShowDialog();
         }
     }
 }
