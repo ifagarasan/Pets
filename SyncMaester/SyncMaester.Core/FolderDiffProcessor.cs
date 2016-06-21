@@ -14,13 +14,12 @@ namespace SyncMaester.Core
             _diffProcessor = diffProcessor;
         }
 
-        public void Process(IFolderDiff folderDiff)
+        public void Process(IFolderDiffResult folderDiffResult)
         {
-            ObjectValidation.IsNotNull(folderDiff);
-            ObjectValidation.IsNotNull(folderDiff.Diffs);
+            ObjectValidation.IsNotNull(folderDiffResult);
 
-            foreach (var diff in folderDiff.Diffs)
-                _diffProcessor.Process(diff, folderDiff.Source, folderDiff.Destination);
+            foreach (var diff in folderDiffResult.FolderDiff.Diffs)
+                _diffProcessor.Process(diff, folderDiffResult.Source, folderDiffResult.Destination);
         }
     }
 }

@@ -57,9 +57,13 @@
     <Compile Include="DiffBuilder.cs" />
     <Compile Include="DiffProcessor.cs" />
     <Compile Include="FolderDiffProcessor.cs" />
+    <Compile Include="FolderDiffResult.cs" />
     <Compile Include="IDiffBuilder.cs" />
     <Compile Include="IDiffProcessor.cs" />
+    <Compile Include="DiffResult.cs" />
+    <Compile Include="IDiffResult.cs" />
     <Compile Include="IFolderDiffProcessor.cs" />
+    <Compile Include="IFolderDiffResult.cs" />
     <Compile Include="IKontrol.cs" />
     <Compile Include="ISettings.cs" />
     <Compile Include="ISyncPair.cs" />

@@ -1,10 +1,9 @@
-using Kore.IO.Sync;
+﻿using System.Collections.Generic;
 
 namespace SyncMaester.Core
 {
     public interface IDiffResult
     {
-        ISyncPair SyncPair { get; }
-        IFolderDiff FolderDiff { get; }
+        IList<IFolderDiffResult> FolderDiffResults { get; }
     }
 }

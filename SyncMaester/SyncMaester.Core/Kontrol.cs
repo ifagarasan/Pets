@@ -26,6 +26,8 @@ namespace SyncMaester.Core
             _folderDiffProcessor = folderDiffProcessor;
         }
 
+        public ISettings Settings => _settingsManager.Data;
+
         public IReadOnlyCollection<ISyncPair> SyncPairs => _settingsManager.Data.SyncPairs.AsReadOnly();
 
         public void AddSyncPair(ISyncPair syncPair)
@@ -35,12 +37,26 @@ namespace SyncMaester.Core
             _settingsManager.Data.SyncPairs.Add(syncPair);
         }
 
-        public void ProcessFolderDiff(IList<IFolderDiff> folderDiffs)
+        public IDiffResult BuildDiff()
         {
-            IsNotNull(folderDiffs);
+            IsNotNull(_settingsManager.Data.SyncPairs);
 
-            foreach (var folderDiff in folderDiffs)
-                _folderDiffProcessor.Process(folderDiff);
+            List<IFolderDiffResult> folderDiffResults = _settingsManager.Data.SyncPairs.Select(s => BuildFolderDiffResult(s)).ToList();
+
+            return new DiffResult(folderDiffResults);
+        }
+
+        private IFolderDiffResult BuildFolderDiffResult(ISyncPair syncPair)
+        {
+            return new FolderDiffResult(syncPair, _diffBuilder.Build(syncPair));
+        }
+
+        public void ProcessFolderDiff(IDiffResult diffResult)
+        {
+            IsNotNull(diffResult);
+
+            foreach (var folderDiffResult in diffResult.FolderDiffResults)
+                _folderDiffProcessor.Process(folderDiffResult);
         }
 
         public void WriteSettings(IKoreFileInfo destination)
@@ -58,15 +74,6 @@ namespace SyncMaester.Core
                 _settingsManager.Data = new Settings();
             else
                 _settingsManager.Read(source);
-        }
-
-        public ISettings Settings => _settingsManager.Data;
-
-        public IList<IFolderDiff> BuildDiff()
-        {
-            IsNotNull(_settingsManager.Data.SyncPairs);
-
-            return _settingsManager.Data.SyncPairs.Select(s => _diffBuilder.Build(s)).ToList();
         }
     }
 }

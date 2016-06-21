@@ -4,6 +4,6 @@ namespace SyncMaester.Core
 {
     public interface IFolderDiffProcessor
     {
-        void Process(IFolderDiff folderDiff);
+        void Process(IFolderDiffResult folderDiff);
     }
 }

@@ -122,14 +122,18 @@ namespace SyncMaester.Core.UnitTests
             _mockDiffBuilder.Setup(m => m.Build(syncPair1)).Returns(mockFolderDiff1.Object);
             _mockDiffBuilder.Setup(m => m.Build(syncPair2)).Returns(mockFolderDiff2.Object);
 
-            var diffs = _kontrol.BuildDiff();
+            IDiffResult diffResult = _kontrol.BuildDiff();
 
             _mockDiffBuilder.Verify(m => m.Build(syncPair1));
             _mockDiffBuilder.Verify(m => m.Build(syncPair2));
 
-            Assert.AreEqual(2, diffs.Count);
-            Assert.AreSame(mockFolderDiff1.Object, diffs[0]);
-            Assert.AreSame(mockFolderDiff2.Object, diffs[1]);
+            Assert.AreEqual(2, diffResult.FolderDiffResults.Count);
+
+            Assert.AreSame(mockFolderDiff1.Object, diffResult.FolderDiffResults[0].FolderDiff);
+            Assert.AreSame(syncPair1, diffResult.FolderDiffResults[0].SyncPair);
+
+            Assert.AreSame(mockFolderDiff2.Object, diffResult.FolderDiffResults[1].FolderDiff);
+            Assert.AreSame(syncPair2, diffResult.FolderDiffResults[1].SyncPair);
         }
 
         #endregion
@@ -139,11 +143,23 @@ namespace SyncMaester.Core.UnitTests
         [TestMethod]
         public void ProcessFolderDiff()
         {
-            var mockFolderDiff = new Mock<IFolderDiff>();
+            var mockFolderDiff1 = new Mock<IFolderDiff>();
+            var mockFolderDiff2 = new Mock<IFolderDiff>();
 
-            _kontrol.ProcessFolderDiff(new List<IFolderDiff> { mockFolderDiff.Object });
+            var mockFolderDiffResult1 = new Mock<IFolderDiffResult>();
+            mockFolderDiffResult1.Setup(m => m.FolderDiff).Returns(mockFolderDiff1.Object);
 
-            _mockFolderDiffProcessor.Verify(m => m.Process(mockFolderDiff.Object));
+            var mockFolderDiffResult2 = new Mock<IFolderDiffResult>();
+            mockFolderDiffResult2.Setup(m => m.FolderDiff).Returns(mockFolderDiff2.Object);
+
+            var mockDiffResult = new Mock<IDiffResult>();
+
+            mockDiffResult.Setup(m => m.FolderDiffResults).Returns(new List<IFolderDiffResult> { mockFolderDiffResult1.Object, mockFolderDiffResult2.Object });
+
+            _kontrol.ProcessFolderDiff(mockDiffResult.Object);
+
+            _mockFolderDiffProcessor.Verify(m => m.Process(mockFolderDiffResult1.Object), Times.Once);
+            _mockFolderDiffProcessor.Verify(m => m.Process(mockFolderDiffResult2.Object), Times.Once);
         }
 
         [TestMethod]

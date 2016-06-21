@@ -8,8 +8,8 @@ namespace SyncMaester.Core
     public interface IKontrol
     {
         ISettings Settings { get; }
-        IList<IFolderDiff> BuildDiff();
-        void ProcessFolderDiff(IList<IFolderDiff> folderDiff);
+        IDiffResult BuildDiff();
+        void ProcessFolderDiff(IDiffResult folderDiff);
         void WriteSettings(IKoreFileInfo destination);
         void ReadSettings(IKoreFileInfo source);
     }
