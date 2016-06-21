@@ -16,10 +16,11 @@ namespace SyncMaester.Core
 
         public void Process(IFolderDiffResult folderDiffResult)
         {
-            ObjectValidation.IsNotNull(folderDiffResult);
+            ObjectValidation.IsNotNull(folderDiffResult, nameof(folderDiffResult));
+            ObjectValidation.IsNotNull(folderDiffResult.FolderDiff, nameof(folderDiffResult.FolderDiff));
 
             foreach (var diff in folderDiffResult.FolderDiff.Diffs)
-                _diffProcessor.Process(diff, folderDiffResult.Source, folderDiffResult.Destination);
+                _diffProcessor.Process(diff, folderDiffResult.FolderDiff.Source, folderDiffResult.FolderDiff.Destination);
         }
     }
 }

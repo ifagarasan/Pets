@@ -19,6 +19,7 @@ namespace SyncMaester.Core.UnitTests
         private FolderDiffProcessor _folderDiffProcessor;
         Mock<IDiffProcessor> _mockDiffProcessor;
         Mock<IFolderDiff> _mockFolderDiff;
+        private Mock<IFolderDiffResult> _mockFolderDiffResult;
 
         [TestInitialize]
         public void Setup()
@@ -27,6 +28,7 @@ namespace SyncMaester.Core.UnitTests
             _folderDiffProcessor = new FolderDiffProcessor(_mockDiffProcessor.Object);
 
             _mockFolderDiff = new Mock<IFolderDiff>();
+            _mockFolderDiffResult = new Mock<IFolderDiffResult>();
         }
 
         [TestMethod]
@@ -53,6 +55,9 @@ namespace SyncMaester.Core.UnitTests
             var mockSourceFolderInfo = new Mock<IKoreFolderInfo>();
             var mockDestinationFolderInfo = new Mock<IKoreFolderInfo>();
 
+            var mockFolderDiffResult = new Mock<IFolderDiffResult>();
+            mockFolderDiffResult.Setup(m => m.FolderDiff).Returns(_mockFolderDiff.Object);
+
             _mockDiffProcessor.Setup(m => m.Process(It.IsAny<IDiff>(), It.IsAny<IKoreFolderInfo>(), It.IsAny<IKoreFolderInfo>()))
                 .Callback((IDiff x, IKoreFolderInfo source, IKoreFolderInfo destination) =>
             {
@@ -63,23 +68,23 @@ namespace SyncMaester.Core.UnitTests
             _mockFolderDiff.Setup(m => m.Source).Returns(mockSourceFolderInfo.Object);
             _mockFolderDiff.Setup(m => m.Destination).Returns(mockDestinationFolderInfo.Object);
 
-            _folderDiffProcessor.Process(_mockFolderDiff.Object);
+            _folderDiffProcessor.Process(mockFolderDiffResult.Object);
 
             _mockDiffProcessor.Verify(m => m.Process(It.IsAny<IDiff>(), mockSourceFolderInfo.Object, mockDestinationFolderInfo.Object), Times.Exactly(3));
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void ValidatesFolderDiffOnProcess()
+        public void ValidatesFolderDiffResultOnProcess()
         {
             _folderDiffProcessor.Process(null);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void ValidatesFolderDiffDiffsOnProcess()
+        public void ValidatesFolderDiffOnProcess()
         {
-            _folderDiffProcessor.Process(_mockFolderDiff.Object);
+            _folderDiffProcessor.Process(_mockFolderDiffResult.Object);
         }
 
         #endregion

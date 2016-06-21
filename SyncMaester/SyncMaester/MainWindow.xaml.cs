@@ -53,11 +53,11 @@ namespace SyncMaester
                 return;
             }
 
-            var diffs = _kontrol.BuildDiff();
+            var diffResult = _kontrol.BuildDiff();
 
-            _kontrol.ProcessFolderDiff(diffs);
+            _kontrol.ProcessFolderDiff(diffResult);
 
-            MessageBox.Show($"Processed {diffs[0].Diffs.Count} diffs");
+            MessageBox.Show("Processed diffs");
         }
 
         private void syncManager_Click(object sender, RoutedEventArgs e)

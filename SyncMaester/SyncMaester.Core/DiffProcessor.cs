@@ -9,9 +9,9 @@ namespace SyncMaester.Core
     {
         public void Process(IDiff diff, IKoreFolderInfo source, IKoreFolderInfo destination)
         {
-            IsNotNull(diff);
-            IsNotNull(source);
-            IsNotNull(destination);
+            IsNotNull(diff, nameof(diff));
+            IsNotNull(source, nameof(source));
+            IsNotNull(destination, nameof(destination));
 
             if (diff.Type == DiffType.SourceNew)
             {
