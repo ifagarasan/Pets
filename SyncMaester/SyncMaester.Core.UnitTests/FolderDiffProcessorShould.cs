@@ -57,6 +57,7 @@ namespace SyncMaester.Core.UnitTests
 
             var mockFolderDiffResult = new Mock<IFolderDiffResult>();
             mockFolderDiffResult.Setup(m => m.FolderDiff).Returns(_mockFolderDiff.Object);
+            mockFolderDiffResult.Setup(m => m.SyncPair).Returns(new Mock<ISyncPair>().Object);
 
             _mockDiffProcessor.Setup(m => m.Process(It.IsAny<IDiff>(), It.IsAny<IKoreFolderInfo>(), It.IsAny<IKoreFolderInfo>()))
                 .Callback((IDiff x, IKoreFolderInfo source, IKoreFolderInfo destination) =>
@@ -84,6 +85,25 @@ namespace SyncMaester.Core.UnitTests
         [ExpectedException(typeof(ArgumentNullException))]
         public void ValidatesFolderDiffOnProcess()
         {
+            _folderDiffProcessor.Process(_mockFolderDiffResult.Object);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ValidatesFolderDiffDiffsOnProcess()
+        {
+            _mockFolderDiffResult.Setup(m => m.FolderDiff).Returns(new Mock<IFolderDiff>().Object);
+
+            _folderDiffProcessor.Process(_mockFolderDiffResult.Object);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ValidatesFolderDiffSyncPairOnProcess()
+        {
+            _mockFolderDiff.Setup(m => m.Diffs).Returns(new List<IDiff>());
+            _mockFolderDiffResult.Setup(m => m.FolderDiff).Returns(_mockFolderDiff.Object);
+
             _folderDiffProcessor.Process(_mockFolderDiffResult.Object);
         }
 
