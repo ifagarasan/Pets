@@ -7,5 +7,7 @@ namespace SyncMaester.Core
         string Source{ get; set; }
 
         string Destination { get; set; }
+
+        SyncLevel Level { get; set; }
     }
 }

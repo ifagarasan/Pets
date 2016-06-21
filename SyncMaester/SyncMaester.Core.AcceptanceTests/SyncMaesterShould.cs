@@ -12,6 +12,7 @@ using Kore.Settings;
 using Kore.Settings.Serializers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static Kore.Dev.Util.IoUtil;
+using Kore.Dev.Util;
 
 namespace SyncMaester.Core.AcceptanceTests
 {
@@ -224,6 +225,43 @@ namespace SyncMaester.Core.AcceptanceTests
 
             Assert.IsTrue(destinationFileInfo1.Exists);
             Assert.IsTrue(destinationFileInfo2.Exists);
+        }
+
+        #endregion
+
+        #region Sync Options
+
+        [TestMethod]
+        public void CopiesContentAtDestinationUnderSourceParentIfLevelIsParent()
+        {
+            var currentTest = Path.Combine(_currentWorkingFolder, "test-sync-options-copy-content");
+
+            _sourceFolder = Path.Combine(currentTest, "src");
+            _destinationFolder = Path.Combine(currentTest, "dest");
+
+            EnsureFolderExists(_destinationFolder);
+
+            var sourceFileInfo = new KoreFileInfo(Path.Combine(_sourceFolder, _primaryTestFileName));
+            sourceFileInfo.EnsureExists();
+
+            var syncPair = new SyncPair
+            {
+                Source = _sourceFolder,
+                Destination = _destinationFolder,
+                Level = SyncLevel.Parent
+            };
+
+            _kontrol.Settings.SyncPairs.Add(syncPair);
+
+            var folderDiffs = _kontrol.BuildDiff();
+
+            _kontrol.ProcessFolderDiff(folderDiffs);
+
+            var destinationFileInfo = new KoreFileInfo(Path.Combine(_destinationFolder, "src", _primaryTestFileName));
+
+            Assert.AreEqual(1, folderDiffs.Count);
+            Assert.AreEqual(DiffType.SourceNew, folderDiffs[0].Diffs[0].Type);
+            Assert.IsTrue(destinationFileInfo.Exists);
         }
 
         #endregion
