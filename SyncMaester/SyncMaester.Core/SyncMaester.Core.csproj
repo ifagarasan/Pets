@@ -55,10 +55,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DiffBuilder.cs" />
+    <Compile Include="DiffInfoBuilder.cs" />
+    <Compile Include="DiffInfo.cs" />
     <Compile Include="DiffProcessor.cs" />
     <Compile Include="FolderDiffProcessor.cs" />
     <Compile Include="FolderDiffResult.cs" />
     <Compile Include="IDiffBuilder.cs" />
+    <Compile Include="IDiffInfo.cs" />
+    <Compile Include="IDiffInfoBuilder.cs" />
     <Compile Include="IDiffProcessor.cs" />
     <Compile Include="DiffResult.cs" />
     <Compile Include="IDiffResult.cs" />

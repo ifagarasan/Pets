@@ -36,7 +36,7 @@ namespace SyncMaester
 
             _kontrol = new Kontrol(new SettingsManager<ISettings>(new BinarySerializer<ISettings>()),
                 new DiffBuilder(new FileScanner(new FileRetriever(new FileInfoProvider())), new FolderDiffer()),
-                new FolderDiffProcessor(new DiffProcessor()));
+                new FolderDiffProcessor(new DiffProcessor(), new DiffInfoBuilder()));
 
             _kontrol.ReadSettings(_settingsFileInfo);
 

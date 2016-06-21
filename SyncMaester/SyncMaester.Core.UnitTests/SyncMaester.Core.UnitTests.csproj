@@ -80,6 +80,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="DiffInfoBuilderShould.cs" />
     <Compile Include="FolderDiffProcessorShould.cs" />
     <Compile Include="DiffProcessorShould.cs" />
     <Compile Include="DiffBuilderShould.cs" />

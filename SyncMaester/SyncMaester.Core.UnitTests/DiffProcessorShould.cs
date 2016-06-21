@@ -25,6 +25,8 @@ namespace SyncMaester.Core.UnitTests
         Mock<IKoreFolderInfo> _mockDestinationFolderInfo;
         Mock<IKoreFileInfo> _mockDestinationFileInfo;
 
+        Mock<IDiffInfo> _mockDiffInfo;
+
         readonly string _sourceTopFolder = "D:\\stuff\\original";
         readonly string _fileName = "file1.txt";
         readonly string _destinationTopFolder = "C:\\bak";
@@ -49,6 +51,10 @@ namespace SyncMaester.Core.UnitTests
 
             _mockDiff.Setup(m => m.SourceFileInfo).Returns(_mockSourceFileInfo.Object);
             _mockDiff.Setup(m => m.DestinationFileInfo).Returns(_mockDestinationFileInfo.Object);
+
+            _mockDiffInfo = new Mock<IDiffInfo>();
+            _mockDiffInfo.Setup(m => m.Source).Returns(_mockSourceFolderInfo.Object);
+            _mockDiffInfo.Setup(m => m.Destination).Returns(_mockDestinationFolderInfo.Object);
         }
 
         [TestMethod]
@@ -68,7 +74,7 @@ namespace SyncMaester.Core.UnitTests
 
             _mockDiff.Setup(m => m.Type).Returns(DiffType.SourceNew);
 
-            _diffProcessor.Process(_mockDiff.Object, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);
+            _diffProcessor.Process(_mockDiff.Object, _mockDiffInfo.Object);
 
             _mockSourceFileInfo.Verify(m => m.Copy(It.IsAny<IKoreIoNodeInfo>()), Times.Exactly(1));
         }
@@ -86,7 +92,7 @@ namespace SyncMaester.Core.UnitTests
 
             _mockDiff.Setup(m => m.Type).Returns(DiffType.SourceNewer);
 
-            _diffProcessor.Process(_mockDiff.Object, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);
+            _diffProcessor.Process(_mockDiff.Object, _mockDiffInfo.Object);
 
             _mockSourceFileInfo.Verify(m => m.Copy(_mockDestinationFileInfo.Object));
         }
@@ -104,7 +110,7 @@ namespace SyncMaester.Core.UnitTests
 
             _mockDiff.Setup(m => m.Type).Returns(DiffType.SourceOlder);
 
-            _diffProcessor.Process(_mockDiff.Object, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);
+            _diffProcessor.Process(_mockDiff.Object, _mockDiffInfo.Object);
 
             _mockDestinationFileInfo.Verify(m => m.Copy(_mockSourceFileInfo.Object));
         }
@@ -119,7 +125,7 @@ namespace SyncMaester.Core.UnitTests
 
             _mockDiff.Setup(m => m.Type).Returns(DiffType.DestinationOrphan);
 
-            _diffProcessor.Process(_mockDiff.Object, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);
+            _diffProcessor.Process(_mockDiff.Object, _mockDiffInfo.Object);
 
             _mockDestinationFileInfo.Verify(m => m.Delete());
         }
@@ -138,7 +144,7 @@ namespace SyncMaester.Core.UnitTests
 
             _mockDiff.Setup(m => m.Type).Returns(DiffType.Identical);
 
-            _diffProcessor.Process(_mockDiff.Object, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);
+            _diffProcessor.Process(_mockDiff.Object, _mockDiffInfo.Object);
 
             _mockSourceFileInfo.Verify(m => m.Copy(It.IsAny<IKoreFileInfo>()), Times.Never);
             _mockDestinationFileInfo.Verify(m => m.Copy(It.IsAny<IKoreFileInfo>()), Times.Never);
@@ -150,21 +156,14 @@ namespace SyncMaester.Core.UnitTests
         [ExpectedException(typeof(ArgumentNullException))]
         public void ValidatesDiffOnProcess()
         {
-            _diffProcessor.Process(null, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);
+            _diffProcessor.Process(null, _mockDiffInfo.Object);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void ValidatesSourceOnProcess()
+        public void ValidatesDiffInfoOnProcess()
         {
-            _diffProcessor.Process(_mockDiff.Object, null, _mockDestinationFolderInfo.Object);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ValidatesDestinationOnProcess()
-        {
-            _diffProcessor.Process(_mockDiff.Object, _mockSourceFolderInfo.Object, null);
+            _diffProcessor.Process(_mockDiff.Object, null);
         }
     }
 }

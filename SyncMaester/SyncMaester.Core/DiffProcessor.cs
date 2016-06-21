@@ -7,9 +7,14 @@ namespace SyncMaester.Core
 {
     public class DiffProcessor : IDiffProcessor
     {
-        public void Process(IDiff diff, IKoreFolderInfo source, IKoreFolderInfo destination)
+        public void Process(IDiff diff, IDiffInfo diffInfo)
         {
             IsNotNull(diff, nameof(diff));
+            IsNotNull(diffInfo, nameof(diffInfo));
+
+            var source = diffInfo.Source;
+            var destination = diffInfo.Destination;
+
             IsNotNull(source, nameof(source));
             IsNotNull(destination, nameof(destination));
 

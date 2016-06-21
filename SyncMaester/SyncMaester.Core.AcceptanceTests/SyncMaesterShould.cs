@@ -36,7 +36,7 @@ namespace SyncMaester.Core.AcceptanceTests
             EnsureFolderExists(_currentWorkingFolder);
 
             _diffBuilder = new DiffBuilder(new FileScanner(new FileRetriever(new FileInfoProvider())), new FolderDiffer());
-            _folderDiffProcessor = new FolderDiffProcessor(new DiffProcessor());
+            _folderDiffProcessor = new FolderDiffProcessor(new DiffProcessor(), new DiffInfoBuilder());
             _settingsManager = new SettingsManager<ISettings>(new BinarySerializer<ISettings>())
             {
                 Data = new Settings()
@@ -63,7 +63,8 @@ namespace SyncMaester.Core.AcceptanceTests
             var syncPair = new SyncPair
             {
                 Source = _sourceFolder,
-                Destination = _destinationFolder
+                Destination = _destinationFolder,
+                Level = SyncLevel.Flat
             };
 
             _kontrol.Settings.SyncPairs.Add(syncPair);
@@ -200,13 +201,15 @@ namespace SyncMaester.Core.AcceptanceTests
             _kontrol.Settings.SyncPairs.Add(new SyncPair
             {
                 Source = sourceFolder1,
-                Destination = destinationFolder1
+                Destination = destinationFolder1,
+                Level = SyncLevel.Flat
             });
 
             _kontrol.Settings.SyncPairs.Add(new SyncPair
             {
                 Source = sourceFolder2,
-                Destination = destinationFolder2
+                Destination = destinationFolder2,
+                Level = SyncLevel.Flat
             });
 
             var diffResult = _kontrol.BuildDiff();
@@ -294,7 +297,7 @@ namespace SyncMaester.Core.AcceptanceTests
 
             var kontrol = new Kontrol(settingsManager,
                 new DiffBuilder(new FileScanner(new FileRetriever(new FileInfoProvider())), new FolderDiffer()),
-                new FolderDiffProcessor(new DiffProcessor()));
+                new FolderDiffProcessor(new DiffProcessor(), new DiffInfoBuilder()));
 
             kontrol.ReadSettings(settingsFile);
 
