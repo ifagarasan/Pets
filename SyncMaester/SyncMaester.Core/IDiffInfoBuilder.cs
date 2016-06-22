@@ -4,6 +4,6 @@ namespace SyncMaester.Core
 {
     public interface IDiffInfoBuilder
     {
-        IDiffInfo BuildInfo(IFolderDiffResult folderDiffResult);
+        IDiffInfo BuildInfo(ISyncPair syncPair);
     }
 }

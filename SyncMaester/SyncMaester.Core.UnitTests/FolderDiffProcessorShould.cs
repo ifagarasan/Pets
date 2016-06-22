@@ -14,15 +14,13 @@ namespace SyncMaester.Core.UnitTests
         Mock<IDiffProcessor> _mockDiffProcessor;
         Mock<IFolderDiff> _mockFolderDiff;
         private Mock<IFolderDiffResult> _mockFolderDiffResult;
-        Mock<IDiffInfoBuilder> _mockDiffInfoBuilder;
 
         [TestInitialize]
         public void Setup()
         {
-            _mockDiffInfoBuilder = new Mock<IDiffInfoBuilder>();
 
             _mockDiffProcessor = new Mock<IDiffProcessor>();
-            _folderDiffProcessor = new FolderDiffProcessor(_mockDiffProcessor.Object, _mockDiffInfoBuilder.Object);
+            _folderDiffProcessor = new FolderDiffProcessor(_mockDiffProcessor.Object);
 
             _mockFolderDiff = new Mock<IFolderDiff>();
             _mockFolderDiffResult = new Mock<IFolderDiffResult>();
@@ -34,33 +32,10 @@ namespace SyncMaester.Core.UnitTests
         [ExpectedException(typeof(ArgumentNullException))]
         public void ValidatefDiffProcessorOnInit()
         {
-            _folderDiffProcessor = new FolderDiffProcessor(null, null);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ValidatefDiffInfoBuilderOnInit()
-        {
-            _folderDiffProcessor = new FolderDiffProcessor(_mockDiffProcessor.Object, null);
+            _folderDiffProcessor = new FolderDiffProcessor(null);
         }
 
         #region Process
-
-        [TestMethod]
-        public void CallsDiffInfoBuilder()
-        {
-            _mockDiffInfoBuilder.Setup(m => m.BuildInfo(It.IsAny<IFolderDiffResult>()));
-
-            _mockFolderDiffResult.Setup(m => m.SyncPair).Returns(new Mock<ISyncPair>().Object);
-
-            _mockFolderDiff.Setup(m => m.Diffs).Returns(new List<IDiff>());
-
-            _mockFolderDiffResult.Setup(m => m.FolderDiff).Returns(_mockFolderDiff.Object);
-
-            _folderDiffProcessor.Process(_mockFolderDiffResult.Object);
-
-            _mockDiffInfoBuilder.Verify(m => m.BuildInfo(_mockFolderDiffResult.Object));
-        }
 
         [TestMethod]
         public void CallProcessorOnEachElement()
@@ -73,17 +48,13 @@ namespace SyncMaester.Core.UnitTests
             };
 
             var index = 0;
-            var mockDiffInfo = new Mock<IDiffInfo>();
-
-            _mockDiffInfoBuilder.Setup(m => m.BuildInfo(It.IsAny<IFolderDiffResult>())).Returns(mockDiffInfo.Object);
-
             var mockFolderDiffResult = new Mock<IFolderDiffResult>();
 
             mockFolderDiffResult.Setup(m => m.FolderDiff).Returns(_mockFolderDiff.Object);
             mockFolderDiffResult.Setup(m => m.SyncPair).Returns(new Mock<ISyncPair>().Object);
 
-            _mockDiffProcessor.Setup(m => m.Process(It.IsAny<IDiff>(), It.IsAny<IDiffInfo>()))
-                .Callback((IDiff x, IDiffInfo y) =>
+            _mockDiffProcessor.Setup(m => m.Process(It.IsAny<IDiff>(), It.IsAny<IKoreFolderInfo>(), It.IsAny<IKoreFolderInfo>()))
+                .Callback((IDiff x, IKoreFolderInfo y, IKoreFolderInfo z) =>
             {
                 Assert.AreSame(diffs[index++], x);
             });
@@ -92,7 +63,7 @@ namespace SyncMaester.Core.UnitTests
 
             _folderDiffProcessor.Process(mockFolderDiffResult.Object);
 
-            _mockDiffProcessor.Verify(m => m.Process(It.IsAny<IDiff>(), mockDiffInfo.Object), Times.Exactly(3));
+            _mockDiffProcessor.Verify(m => m.Process(It.IsAny<IDiff>(), It.IsAny<IKoreFolderInfo>(), It.IsAny<IKoreFolderInfo>()), Times.Exactly(3));
         }
 
         [TestMethod]

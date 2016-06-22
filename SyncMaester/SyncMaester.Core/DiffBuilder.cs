@@ -9,14 +9,16 @@ namespace SyncMaester.Core
 {
     public class DiffBuilder : IDiffBuilder
     {
+        private readonly IDiffInfoBuilder _diffInfoBuilder;
         private readonly IFileScanner _fileScanner;
         private readonly IFolderDiffer _folderDiffer;
 
-        public DiffBuilder(IFileScanner fileScanner, IFolderDiffer folderDiffer)
+        public DiffBuilder(IDiffInfoBuilder diffInfoBuilder, IFileScanner fileScanner, IFolderDiffer folderDiffer)
         {
             IsNotNull(fileScanner, nameof(fileScanner));
             IsNotNull(folderDiffer, nameof(folderDiffer));
 
+            _diffInfoBuilder = diffInfoBuilder;
             _fileScanner = fileScanner;
             _folderDiffer = folderDiffer;
         }
@@ -25,12 +27,14 @@ namespace SyncMaester.Core
         {
             IsNotNull(syncPair, nameof(syncPair));
 
-            //TODO: throw exception if source file doesn't exist
-            //TODO: create file if doesn't exist
-            //TODO: create diffinfo here
+            var diffInfo = _diffInfoBuilder.BuildInfo(syncPair);
 
-            var sourceScan = _fileScanner.Scan(syncPair.Source);
-            var destinationScan = _fileScanner.Scan(syncPair.Destination);
+            diffInfo.Destination.EnsureExists();
+
+            //TODO: throw exception if source file doesn't exist
+
+            var sourceScan = _fileScanner.Scan(diffInfo.Source.FullName);
+            var destinationScan = _fileScanner.Scan(diffInfo.Destination.FullName);
 
             return _folderDiffer.BuildDiff(sourceScan, destinationScan);
         }

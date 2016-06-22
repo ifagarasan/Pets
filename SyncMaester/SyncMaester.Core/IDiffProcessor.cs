@@ -5,6 +5,6 @@ namespace SyncMaester.Core
 {
     public interface IDiffProcessor
     {
-        void Process(IDiff diff, IDiffInfo diffInfo);
+        void Process(IDiff diff, IKoreFolderInfo source, IKoreFolderInfo destination);
     }
 }

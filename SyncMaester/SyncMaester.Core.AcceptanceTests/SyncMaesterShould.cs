@@ -35,8 +35,8 @@ namespace SyncMaester.Core.AcceptanceTests
             EnsureFolderExists(TestRoot);
             EnsureFolderExists(_currentWorkingFolder);
 
-            _diffBuilder = new DiffBuilder(new FileScanner(new FileRetriever()), new FolderDiffer());
-            _folderDiffProcessor = new FolderDiffProcessor(new DiffProcessor(), new DiffInfoBuilder());
+            _diffBuilder = new DiffBuilder(new DiffInfoBuilder(), new FileScanner(new FileRetriever()), new FolderDiffer());
+            _folderDiffProcessor = new FolderDiffProcessor(new DiffProcessor());
             _settingsManager = new SettingsManager<ISettings>(new BinarySerializer<ISettings>())
             {
                 Data = new Settings()
@@ -99,7 +99,8 @@ namespace SyncMaester.Core.AcceptanceTests
             var syncPair = new SyncPair
             {
                 Source = _sourceFolder,
-                Destination = _destinationFolder
+                Destination = _destinationFolder,
+                Level = SyncLevel.Flat
             };
 
             _kontrol.Settings.SyncPairs.Add(syncPair);
@@ -132,7 +133,8 @@ namespace SyncMaester.Core.AcceptanceTests
             var syncPair = new SyncPair
             {
                 Source = _sourceFolder,
-                Destination = _destinationFolder
+                Destination = _destinationFolder,
+                Level = SyncLevel.Flat
             };
 
             _kontrol.Settings.SyncPairs.Add(syncPair);
@@ -161,7 +163,8 @@ namespace SyncMaester.Core.AcceptanceTests
             var syncPair = new SyncPair
             {
                 Source = _sourceFolder,
-                Destination = _destinationFolder
+                Destination = _destinationFolder,
+                Level = SyncLevel.Flat
             };
 
             _kontrol.Settings.SyncPairs.Add(syncPair);
@@ -225,7 +228,7 @@ namespace SyncMaester.Core.AcceptanceTests
 
         #endregion
 
-        #region Sync Options
+        #region Sync Params
 
         [TestMethod]
         public void CopiesContentAtDestinationUnderSourceParentIfLevelIsParent()
@@ -296,8 +299,8 @@ namespace SyncMaester.Core.AcceptanceTests
             var settingsManager = new SettingsManager<ISettings>(new BinarySerializer<ISettings>());
 
             var kontrol = new Kontrol(settingsManager,
-                new DiffBuilder(new FileScanner(new FileRetriever()), new FolderDiffer()),
-                new FolderDiffProcessor(new DiffProcessor(), new DiffInfoBuilder()));
+                new DiffBuilder(new DiffInfoBuilder(), new FileScanner(new FileRetriever()), new FolderDiffer()),
+                new FolderDiffProcessor(new DiffProcessor()));
 
             kontrol.ReadSettings(settingsFile);
 

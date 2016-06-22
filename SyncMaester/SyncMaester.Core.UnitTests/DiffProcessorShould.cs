@@ -74,7 +74,7 @@ namespace SyncMaester.Core.UnitTests
 
             _mockDiff.Setup(m => m.Type).Returns(DiffType.SourceNew);
 
-            _diffProcessor.Process(_mockDiff.Object, _mockDiffInfo.Object);
+            _diffProcessor.Process(_mockDiff.Object, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);
 
             _mockSourceFileInfo.Verify(m => m.Copy(It.IsAny<IKoreIoNodeInfo>()), Times.Exactly(1));
         }
@@ -92,7 +92,7 @@ namespace SyncMaester.Core.UnitTests
 
             _mockDiff.Setup(m => m.Type).Returns(DiffType.SourceNewer);
 
-            _diffProcessor.Process(_mockDiff.Object, _mockDiffInfo.Object);
+            _diffProcessor.Process(_mockDiff.Object, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);
 
             _mockSourceFileInfo.Verify(m => m.Copy(_mockDestinationFileInfo.Object));
         }
@@ -110,7 +110,7 @@ namespace SyncMaester.Core.UnitTests
 
             _mockDiff.Setup(m => m.Type).Returns(DiffType.SourceOlder);
 
-            _diffProcessor.Process(_mockDiff.Object, _mockDiffInfo.Object);
+            _diffProcessor.Process(_mockDiff.Object, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);
 
             _mockDestinationFileInfo.Verify(m => m.Copy(_mockSourceFileInfo.Object));
         }
@@ -125,7 +125,7 @@ namespace SyncMaester.Core.UnitTests
 
             _mockDiff.Setup(m => m.Type).Returns(DiffType.DestinationOrphan);
 
-            _diffProcessor.Process(_mockDiff.Object, _mockDiffInfo.Object);
+            _diffProcessor.Process(_mockDiff.Object, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);
 
             _mockDestinationFileInfo.Verify(m => m.Delete());
         }
@@ -144,7 +144,7 @@ namespace SyncMaester.Core.UnitTests
 
             _mockDiff.Setup(m => m.Type).Returns(DiffType.Identical);
 
-            _diffProcessor.Process(_mockDiff.Object, _mockDiffInfo.Object);
+            _diffProcessor.Process(_mockDiff.Object, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);
 
             _mockSourceFileInfo.Verify(m => m.Copy(It.IsAny<IKoreFileInfo>()), Times.Never);
             _mockDestinationFileInfo.Verify(m => m.Copy(It.IsAny<IKoreFileInfo>()), Times.Never);
@@ -156,14 +156,7 @@ namespace SyncMaester.Core.UnitTests
         [ExpectedException(typeof(ArgumentNullException))]
         public void ValidatesDiffOnProcess()
         {
-            _diffProcessor.Process(null, _mockDiffInfo.Object);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ValidatesDiffInfoOnProcess()
-        {
-            _diffProcessor.Process(_mockDiff.Object, null);
+            _diffProcessor.Process(null, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);
         }
     }
 }

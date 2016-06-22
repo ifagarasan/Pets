@@ -35,8 +35,8 @@ namespace SyncMaester
             _settingsFileInfo = new KoreFileInfo("settings.bin");
 
             _kontrol = new Kontrol(new SettingsManager<ISettings>(new BinarySerializer<ISettings>()),
-                new DiffBuilder(new FileScanner(new FileRetriever()), new FolderDiffer()),
-                new FolderDiffProcessor(new DiffProcessor(), new DiffInfoBuilder()));
+                new DiffBuilder(new DiffInfoBuilder(), new FileScanner(new FileRetriever()), new FolderDiffer()),
+                new FolderDiffProcessor(new DiffProcessor()));
 
             _kontrol.ReadSettings(_settingsFileInfo);
 

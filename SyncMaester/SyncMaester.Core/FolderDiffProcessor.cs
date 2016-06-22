@@ -5,16 +5,13 @@ namespace SyncMaester.Core
 {
     public class FolderDiffProcessor : IFolderDiffProcessor
     {
-        private readonly IDiffInfoBuilder _diffInfoBuilder;
         private readonly IDiffProcessor _diffProcessor;
 
-        public FolderDiffProcessor(IDiffProcessor diffProcessor, IDiffInfoBuilder diffInfoBuilder)
+        public FolderDiffProcessor(IDiffProcessor diffProcessor)
         {
             IsNotNull(diffProcessor, nameof(diffProcessor));
-            IsNotNull(diffInfoBuilder, nameof(diffInfoBuilder));
 
             _diffProcessor = diffProcessor;
-            _diffInfoBuilder = diffInfoBuilder;
         }
 
         public void Process(IFolderDiffResult folderDiffResult)
@@ -23,10 +20,8 @@ namespace SyncMaester.Core
             IsNotNull(folderDiffResult.FolderDiff, nameof(folderDiffResult.FolderDiff));
             IsNotNull(folderDiffResult.FolderDiff.Diffs, nameof(folderDiffResult.FolderDiff.Diffs));
 
-            var diffInfo = _diffInfoBuilder.BuildInfo(folderDiffResult);
-
             foreach (var diff in folderDiffResult.FolderDiff.Diffs)
-                _diffProcessor.Process(diff, diffInfo);
+                _diffProcessor.Process(diff, folderDiffResult.FolderDiff.Source, folderDiffResult.FolderDiff.Destination);
         }
     }
 }
