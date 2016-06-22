@@ -25,6 +25,10 @@ namespace SyncMaester.Core
         {
             IsNotNull(syncPair, nameof(syncPair));
 
+            //TODO: throw exception if source file doesn't exist
+            //TODO: create file if doesn't exist
+            //TODO: create diffinfo here
+
             var sourceScan = _fileScanner.Scan(syncPair.Source);
             var destinationScan = _fileScanner.Scan(syncPair.Destination);
 

@@ -35,7 +35,7 @@ namespace SyncMaester
             _settingsFileInfo = new KoreFileInfo("settings.bin");
 
             _kontrol = new Kontrol(new SettingsManager<ISettings>(new BinarySerializer<ISettings>()),
-                new DiffBuilder(new FileScanner(new FileRetriever(new FileInfoProvider())), new FolderDiffer()),
+                new DiffBuilder(new FileScanner(new FileRetriever()), new FolderDiffer()),
                 new FolderDiffProcessor(new DiffProcessor(), new DiffInfoBuilder()));
 
             _kontrol.ReadSettings(_settingsFileInfo);
@@ -49,7 +49,7 @@ namespace SyncMaester
         {
             if (_kontrol.SyncPairs == null || _kontrol.SyncPairs.Count == 0)
             {
-                MessageBox.Show("Nothing to sync");
+                MessageBox.Show("Nothing to sync", Title);
                 return;
             }
 
@@ -57,7 +57,7 @@ namespace SyncMaester
 
             _kontrol.ProcessFolderDiff(diffResult);
 
-            MessageBox.Show("Processed diffs");
+            MessageBox.Show("Processed diffs", Title);
         }
 
         private void syncManager_Click(object sender, RoutedEventArgs e)

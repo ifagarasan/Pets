@@ -4,12 +4,59 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SyncMaester"
+        xmlns:extensions="clr-namespace:Kore.Wpf.Markup.Extensions;assembly=Kore.Wpf"
+        xmlns:core="clr-namespace:SyncMaester.Core;assembly=SyncMaester.Core"
         mc:Ignorable="d"
-        Title="SyncMaester - Sync Manager" Height="627" Width="533">
-    <Grid>
-        <ListBox x:Name="syncPairs" HorizontalAlignment="Left" Margin="10,52,0,129" Width="505"/>
-        <Button x:Name="add" Content="Add" HorizontalAlignment="Left" Margin="10,472,0,0" VerticalAlignment="Top" Width="138" Height="53" Click="add_Click"/>
-        <Button x:Name="save" Content="Save" HorizontalAlignment="Left" Margin="377,533,0,0" VerticalAlignment="Top" Width="138" Height="53" Click="save_Click"/>
+        Title="SyncMaester - Sync Manager" Height="570" Width="629">
+    <Grid Height="570" VerticalAlignment="Top" Margin="0,0,0,-31">
+        <Button x:Name="add" Content="Add" HorizontalAlignment="Left" Margin="463,466,0,0" VerticalAlignment="Top" Width="138" Height="53" Click="Add_Click"/>
+        <ListView x:Name="syncPairs" HorizontalAlignment="Left" Height="422" Margin="22,24,0,0" VerticalAlignment="Top" Width="579">
+            <ListView.Resources>
+                <Style TargetType="{x:Type GridViewColumnHeader}">
+                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                </Style>
+            </ListView.Resources>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Source" Width="200">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <TextBox Text="{Binding Source}"></TextBox>
+                                </DockPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Destination" Width="200">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <TextBox Text="{Binding Destination}"></TextBox>
+                                </DockPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Level" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <ComboBox SelectedValue="{Binding Level}" ItemsSource="{Binding Source={extensions:EnumBinding {x:Type core:SyncLevel}}}"/>
+                                </DockPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <Button Content="Delete" Click="Delete_OnClick"></Button>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
 
     </Grid>
 </Window>

@@ -83,6 +83,34 @@ namespace SyncMaester.Core.UnitTests
             Assert.AreSame(mockFolderDIff.Object, diff);
         }
 
+        [TestMethod]
+        public void CreatesDestinationFolderIfNotExists()
+        {
+            var source = "src";
+            var destination = "dest";
+
+            var sourceScanResult = new Mock<IFileScanResult>();
+            var destinationScanResult = new Mock<IFileScanResult>();
+
+            _mockFileScanner.Setup(m => m.Scan(source)).Returns(sourceScanResult.Object);
+            _mockFileScanner.Setup(m => m.Scan(destination)).Returns(destinationScanResult.Object);
+
+            var mockSyncPair = new Mock<ISyncPair>();
+
+            mockSyncPair.Setup(m => m.Source).Returns(source);
+            mockSyncPair.Setup(m => m.Destination).Returns(destination);
+
+            var mockFolderDIff = new Mock<IFolderDiff>();
+            _mockFolderDiffer.Setup(m => m.BuildDiff(It.IsAny<IFileScanResult>(), It.IsAny<IFileScanResult>())).Returns(mockFolderDIff.Object);
+
+            var diff = _builder.Build(mockSyncPair.Object);
+
+            _mockFileScanner.VerifyAll();
+            _mockFolderDiffer.Verify(m => m.BuildDiff(sourceScanResult.Object, destinationScanResult.Object));
+
+            Assert.AreSame(mockFolderDIff.Object, diff);
+        }
+
         #endregion
     }
 }

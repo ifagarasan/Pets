@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Kore.Validation;
 using SyncMaester.Core;
 
 namespace SyncMaester
@@ -22,7 +23,7 @@ namespace SyncMaester
     public partial class SyncManager : Window
     {
         private readonly ISettings _settings;
-        ObservableCollection<ISyncPair> _syncPairs;
+        readonly ObservableCollection<ISyncPair> _syncPairs;
 
         public SyncManager(ISettings settings)
         {
@@ -31,17 +32,28 @@ namespace SyncMaester
 
             InitializeComponent();
 
-            this.syncPairs.ItemsSource = _syncPairs;
+            syncPairs.ItemsSource = _syncPairs;
+
+            Closing += (sender, args) =>
+            {
+                _settings.SyncPairs = _syncPairs.ToList();
+            };
         }
 
-        private void add_Click(object sender, RoutedEventArgs e)
+        private void Add_Click(object sender, RoutedEventArgs e)
         {
             _syncPairs.Add(new SyncPair { Source = "source", Destination = "destination"});
         }
 
-        private void save_Click(object sender, RoutedEventArgs e)
+        private void Delete_OnClick(object sender, RoutedEventArgs e)
         {
-            _settings.SyncPairs = _syncPairs.ToList();
+            if (MessageBox.Show("Delete selected sync pair?", Title, MessageBoxButton.YesNoCancel) != MessageBoxResult.Yes)
+                return;
+
+            var button = sender as Button;
+            var syncPair = button.DataContext as SyncPair;
+
+            _syncPairs.Remove(syncPair);
         }
     }
 }
