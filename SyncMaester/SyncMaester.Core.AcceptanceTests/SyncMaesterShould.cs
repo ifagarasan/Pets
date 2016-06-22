@@ -35,7 +35,7 @@ namespace SyncMaester.Core.AcceptanceTests
             EnsureFolderExists(TestRoot);
             EnsureFolderExists(_currentWorkingFolder);
 
-            _diffBuilder = new DiffBuilder(new FileScanner(new FileRetriever(new FileInfoProvider())), new FolderDiffer());
+            _diffBuilder = new DiffBuilder(new FileScanner(new FileRetriever()), new FolderDiffer());
             _folderDiffProcessor = new FolderDiffProcessor(new DiffProcessor(), new DiffInfoBuilder());
             _settingsManager = new SettingsManager<ISettings>(new BinarySerializer<ISettings>())
             {
@@ -296,7 +296,7 @@ namespace SyncMaester.Core.AcceptanceTests
             var settingsManager = new SettingsManager<ISettings>(new BinarySerializer<ISettings>());
 
             var kontrol = new Kontrol(settingsManager,
-                new DiffBuilder(new FileScanner(new FileRetriever(new FileInfoProvider())), new FolderDiffer()),
+                new DiffBuilder(new FileScanner(new FileRetriever()), new FolderDiffer()),
                 new FolderDiffProcessor(new DiffProcessor(), new DiffInfoBuilder()));
 
             kontrol.ReadSettings(settingsFile);

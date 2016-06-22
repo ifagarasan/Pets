@@ -14,7 +14,7 @@ namespace SyncMaester.Core
             var destination = folderDiffResult.FolderDiff.Destination.FullName;
 
             if (folderDiffResult.SyncPair.Level == SyncLevel.Parent)
-                destination = Path.Combine(destination, Path.GetFileName(source)); //TODO: add Name to KoreFolderInfo
+                destination = Path.Combine(destination, folderDiffResult.FolderDiff.Source.Name);
 
             return new DiffInfo
             {
