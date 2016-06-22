@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Kore.IO.Sync;
 using Kore.IO.Util;
+using static Kore.Validation.ObjectValidation;
 
 namespace SyncMaester.Core
 {
@@ -8,7 +9,10 @@ namespace SyncMaester.Core
     {
         public IDiffInfo BuildInfo(IFolderDiffResult folderDiffResult)
         {
-            //TODO: consolidate by validation
+            IsNotNull(folderDiffResult, nameof(folderDiffResult));
+            IsNotNull(folderDiffResult.FolderDiff, nameof(folderDiffResult.FolderDiff));
+            IsNotNull(folderDiffResult.FolderDiff.Source, nameof(folderDiffResult.FolderDiff.Source));
+            IsNotNull(folderDiffResult.FolderDiff.Destination, nameof(folderDiffResult.FolderDiff.Destination));
 
             var source = folderDiffResult.FolderDiff.Source.FullName;
             var destination = folderDiffResult.FolderDiff.Destination.FullName;

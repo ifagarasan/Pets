@@ -19,42 +19,92 @@ namespace SyncMaester.Core.UnitTests
         string source = "D:\\source\\Music";
         string destination = "D:\\destination";
 
-        Mock<ISyncPair> mockSyncPair;
-        IDiffInfoBuilder diffInfoBuilder;
-        Mock<IFolderDiff> mockFolderDiff;
-        Mock<IKoreFolderInfo> mockSourceFolderInfo;
-        Mock<IFolderDiffResult> mockFolderDiffResult;
-        Mock<IKoreFolderInfo> mockDestinationFolderInfo;
+        Mock<ISyncPair> _mockSyncPair;
+        IDiffInfoBuilder _diffInfoBuilder;
+        Mock<IFolderDiff> _mockFolderDiff;
+        Mock<IKoreFolderInfo> _mockSourceFolderInfo;
+        Mock<IFolderDiffResult> _mockFolderDiffResult;
+        Mock<IKoreFolderInfo> _mockDestinationFolderInfo;
 
         [TestInitialize]
         public void Setup()
         {
-            mockSourceFolderInfo = new Mock<IKoreFolderInfo>();
-            mockSourceFolderInfo.Setup(m => m.FullName).Returns(source);
-            mockSourceFolderInfo.Setup(m => m.Name).Returns("Music");
+            _mockSourceFolderInfo = new Mock<IKoreFolderInfo>();
+            _mockSourceFolderInfo.Setup(m => m.FullName).Returns(source);
+            _mockSourceFolderInfo.Setup(m => m.Name).Returns("Music");
 
-            mockDestinationFolderInfo = new Mock<IKoreFolderInfo>();
-            mockDestinationFolderInfo.Setup(m => m.FullName).Returns(destination);
+            _mockDestinationFolderInfo = new Mock<IKoreFolderInfo>();
+            _mockDestinationFolderInfo.Setup(m => m.FullName).Returns(destination);
 
-            mockFolderDiff = new Mock<IFolderDiff>();
-            mockFolderDiff.Setup(m => m.Source).Returns(mockSourceFolderInfo.Object);
-            mockFolderDiff.Setup(m => m.Destination).Returns(mockDestinationFolderInfo.Object);
+            _mockFolderDiff = new Mock<IFolderDiff>();
+            _mockFolderDiff.Setup(m => m.Source).Returns(_mockSourceFolderInfo.Object);
+            _mockFolderDiff.Setup(m => m.Destination).Returns(_mockDestinationFolderInfo.Object);
 
-            mockSyncPair = new Mock<ISyncPair>();
+            _mockSyncPair = new Mock<ISyncPair>();
 
-            diffInfoBuilder = new DiffInfoBuilder();
+            _diffInfoBuilder = new DiffInfoBuilder();
 
-            mockFolderDiffResult = new Mock<IFolderDiffResult>();
-            mockFolderDiffResult.Setup(m => m.FolderDiff).Returns(mockFolderDiff.Object);
-            mockFolderDiffResult.Setup(m => m.SyncPair).Returns(mockSyncPair.Object);
+            _mockFolderDiffResult = new Mock<IFolderDiffResult>();
+            _mockFolderDiffResult.Setup(m => m.FolderDiff).Returns(_mockFolderDiff.Object);
+            _mockFolderDiffResult.Setup(m => m.SyncPair).Returns(_mockSyncPair.Object);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ValidatesFolderDiffResultOnBuild()
+        {
+            _diffInfoBuilder.BuildInfo(null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ValidatesFolderDiffResultFolderDiffOnBuild()
+        {
+            _mockFolderDiffResult = new Mock<IFolderDiffResult>();
+
+            _diffInfoBuilder.BuildInfo(_mockFolderDiffResult.Object);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ValidatesFolderDiffResultSyncPairOnBuild()
+        {
+            _mockFolderDiffResult = new Mock<IFolderDiffResult>();
+
+            _diffInfoBuilder.BuildInfo(_mockFolderDiffResult.Object);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ValidatesFolderDiffResultFolderDiffSourceOnBuild()
+        {
+            _mockFolderDiff = new Mock<IFolderDiff>();
+
+            _mockFolderDiffResult = new Mock<IFolderDiffResult>();
+            _mockFolderDiffResult.Setup(m => m.FolderDiff).Returns(_mockFolderDiff.Object);
+
+            _diffInfoBuilder.BuildInfo(_mockFolderDiffResult.Object);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ValidatesFolderDiffResultFolderDiffDestinationOnBuild()
+        {
+            _mockFolderDiff = new Mock<IFolderDiff>();
+            _mockFolderDiff.Setup(m => m.Source).Returns(_mockSourceFolderInfo.Object);
+
+            _mockFolderDiffResult = new Mock<IFolderDiffResult>();
+            _mockFolderDiffResult.Setup(m => m.FolderDiff).Returns(_mockFolderDiff.Object);
+
+            _diffInfoBuilder.BuildInfo(_mockFolderDiffResult.Object);
         }
 
         [TestMethod]
         public void LeaveSourceAndDestinationUnalteredWhenLevelIsFlat()
         {
-            mockSyncPair.Setup(m => m.Level).Returns(SyncLevel.Flat);
+            _mockSyncPair.Setup(m => m.Level).Returns(SyncLevel.Flat);
 
-            var diffInfo = diffInfoBuilder.BuildInfo(mockFolderDiffResult.Object);
+            var diffInfo = _diffInfoBuilder.BuildInfo(_mockFolderDiffResult.Object);
 
             Assert.AreEqual(source, diffInfo.Source.FullName);
             Assert.AreEqual(destination, diffInfo.Destination.FullName);
@@ -63,11 +113,11 @@ namespace SyncMaester.Core.UnitTests
         [TestMethod]
         public void AddSourceParentDirectoryNameToDestinationUnalteredWhenLevelIsParent()
         {
-            var expectedDestination = Path.Combine(mockDestinationFolderInfo.Object.FullName, mockSourceFolderInfo.Object.Name);
+            var expectedDestination = Path.Combine(_mockDestinationFolderInfo.Object.FullName, _mockSourceFolderInfo.Object.Name);
 
-            mockSyncPair.Setup(m => m.Level).Returns(SyncLevel.Parent);
+            _mockSyncPair.Setup(m => m.Level).Returns(SyncLevel.Parent);
 
-            var diffInfo = diffInfoBuilder.BuildInfo(mockFolderDiffResult.Object);
+            var diffInfo = _diffInfoBuilder.BuildInfo(_mockFolderDiffResult.Object);
             
             Assert.AreEqual(source, diffInfo.Source.FullName);
             Assert.AreEqual(expectedDestination, diffInfo.Destination.FullName);
