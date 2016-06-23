@@ -4,6 +4,7 @@ using Kore.IO.Scanners;
 using Kore.IO.Sync;
 using Kore.IO.Util;
 using static Kore.Validation.ObjectValidation;
+using Kore.IO.Exceptions;
 
 namespace SyncMaester.Core
 {
@@ -31,7 +32,8 @@ namespace SyncMaester.Core
 
             diffInfo.Destination.EnsureExists();
 
-            //TODO: throw exception if source file doesn't exist
+            if (!diffInfo.Source.Exists)
+                throw new NodeNotFoundException();
 
             var sourceScan = _fileScanner.Scan(diffInfo.Source.FullName);
             var destinationScan = _fileScanner.Scan(diffInfo.Destination.FullName);
