@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Kore.IO;
 using Kore.IO.Sync;
-using Kore.IO.Util;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 

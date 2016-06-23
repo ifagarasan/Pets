@@ -1,5 +1,5 @@
-﻿using Kore.IO.Sync;
-using Kore.IO.Util;
+﻿using Kore.IO;
+using Kore.IO.Sync;
 
 namespace SyncMaester.Core
 {

@@ -1,6 +1,4 @@
-﻿using Kore.IO.Sync;
-
-namespace SyncMaester.Core
+﻿namespace SyncMaester.Core
 {
     public interface IFolderDiffProcessor
     {

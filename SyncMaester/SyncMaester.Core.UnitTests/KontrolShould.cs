@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Castle.Components.DictionaryAdapter;
-using Kore.IO.Exceptions;
+using Kore.IO;
 using Kore.IO.Sync;
-using Kore.IO.Util;
 using Kore.Settings;
 using Kore.Settings.Serializers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Kore.IO.Retrievers;
 using Kore.IO.Scanners;
 using Kore.IO.Sync;
-using Kore.IO.Util;
 using Kore.Settings;
 using Kore.Settings.Serializers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static Kore.Dev.Util.IoUtil;
-using Kore.Dev.Util;
+using Kore.IO;
+using Kore.IO.Management;
 
 namespace SyncMaester.Core.AcceptanceTests
 {
@@ -36,7 +32,7 @@ namespace SyncMaester.Core.AcceptanceTests
             EnsureFolderExists(_currentWorkingFolder);
 
             _diffBuilder = new DiffBuilder(new DiffInfoBuilder(), new FileScanner(new FileRetriever()), new FolderDiffer());
-            _folderDiffProcessor = new FolderDiffProcessor(new DiffProcessor());
+            _folderDiffProcessor = new FolderDiffProcessor(new DiffProcessor(new FileCopier()));
             _settingsManager = new SettingsManager<ISettings>(new BinarySerializer<ISettings>())
             {
                 Data = new Settings()
@@ -177,6 +173,48 @@ namespace SyncMaester.Core.AcceptanceTests
         }
 
         [TestMethod]
+        public void NotCopyAnIdenticalFile()
+        {
+            var currentTest = Path.Combine(_currentWorkingFolder, "test-identical-files");
+
+            _sourceFolder = Path.Combine(currentTest, "src");
+            _destinationFolder = Path.Combine(currentTest, "dest");
+
+            var sourceFileInfo = new KoreFileInfo(Path.Combine(_sourceFolder, _primaryTestFileName));
+            sourceFileInfo.EnsureExists();
+
+            using (var streamWriter = new StreamWriter(sourceFileInfo.FullName))
+            {
+                streamWriter.Write('c');
+            }
+
+            var destinationFileInfo = new KoreFileInfo(Path.Combine(_destinationFolder, _primaryTestFileName));
+            destinationFileInfo.EnsureExists();
+
+            var now = DateTime.Now;
+
+            sourceFileInfo.LastWriteTime = now;
+            destinationFileInfo.LastWriteTime = now;
+
+            var syncPair = new SyncPair
+            {
+                Source = _sourceFolder,
+                Destination = _destinationFolder,
+                Level = SyncLevel.Flat
+            };
+
+            _kontrol.Settings.SyncPairs.Add(syncPair);
+
+            var diffResult = _kontrol.BuildDiff();
+
+            _kontrol.ProcessFolderDiff(diffResult);
+
+            Assert.IsTrue(destinationFileInfo.Exists);
+            Assert.IsTrue(sourceFileInfo.Exists);
+            Assert.AreEqual(0, destinationFileInfo.Size);
+        }
+
+        [TestMethod]
         public void SupportMultipleSyncPairs()
         {
             var currentTest = Path.Combine(_currentWorkingFolder, "test-multiple-sync-pairs");
@@ -300,7 +338,7 @@ namespace SyncMaester.Core.AcceptanceTests
 
             var kontrol = new Kontrol(settingsManager,
                 new DiffBuilder(new DiffInfoBuilder(), new FileScanner(new FileRetriever()), new FolderDiffer()),
-                new FolderDiffProcessor(new DiffProcessor()));
+                new FolderDiffProcessor(new DiffProcessor(new FileCopier())));
 
             kontrol.ReadSettings(settingsFile);
 

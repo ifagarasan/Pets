@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using Kore.IO.Sync;
-using Kore.IO.Util;
+﻿using Kore.IO;
 
 namespace SyncMaester.Core
 {

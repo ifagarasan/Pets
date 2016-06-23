@@ -43,19 +43,19 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Kore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Kore.1.0.0-CI00060\lib\net40\Kore.dll</HintPath>
+      <HintPath>..\packages\Kore.1.0.0-CI00067\lib\net40\Kore.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Kore.Dev, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Kore.Dev.1.0.0-CI00060\lib\net452\Kore.Dev.dll</HintPath>
+      <HintPath>..\packages\Kore.Dev.1.0.0-CI00067\lib\net452\Kore.Dev.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Kore.IO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Kore.IO.1.0.0-CI00060\lib\net461\Kore.IO.dll</HintPath>
+      <HintPath>..\packages\Kore.IO.1.0.0-CI00067\lib\net461\Kore.IO.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Kore.Settings, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Kore.Settings.1.0.0-CI00060\lib\net461\Kore.Settings.dll</HintPath>
+      <HintPath>..\packages\Kore.Settings.1.0.0-CI00067\lib\net461\Kore.Settings.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Moq, Version=4.5.8.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">

@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Kore.IO;
 using Kore.IO.Scanners;
 using Kore.IO.Sync;
-using Kore.IO.Util;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Kore.IO.Exceptions;

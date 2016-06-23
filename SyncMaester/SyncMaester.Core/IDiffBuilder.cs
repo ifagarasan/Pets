@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Kore.IO.Sync;
 
 namespace SyncMaester.Core

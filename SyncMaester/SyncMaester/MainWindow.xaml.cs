@@ -1,21 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows;
+using Kore.IO;
+using Kore.IO.Management;
 using Kore.IO.Retrievers;
 using Kore.IO.Scanners;
 using Kore.IO.Sync;
-using Kore.IO.Util;
 using Kore.Settings;
 using Kore.Settings.Serializers;
 using SyncMaester.Core;
@@ -36,7 +24,7 @@ namespace SyncMaester
 
             _kontrol = new Kontrol(new SettingsManager<ISettings>(new BinarySerializer<ISettings>()),
                 new DiffBuilder(new DiffInfoBuilder(), new FileScanner(new FileRetriever()), new FolderDiffer()),
-                new FolderDiffProcessor(new DiffProcessor()));
+                new FolderDiffProcessor(new DiffProcessor(new FileCopier())));
 
             _kontrol.ReadSettings(_settingsFileInfo);
 

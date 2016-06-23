@@ -1,6 +1,4 @@
-﻿using Kore.IO.Util;
-
-namespace SyncMaester.Core
+﻿namespace SyncMaester.Core
 {
     public interface ISyncPair
     {

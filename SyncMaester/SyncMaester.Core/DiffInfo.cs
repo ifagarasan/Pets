@@ -1,4 +1,4 @@
-﻿using Kore.IO.Util;
+﻿using Kore.IO;
 
 namespace SyncMaester.Core
 {
