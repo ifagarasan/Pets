@@ -4,10 +4,50 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SyncMaester"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="SyncMaester" Height="350" Width="525">
+        Title="SyncMaester" Height="572" Width="746">
     <Grid x:Name="main">
-        <Button x:Name="sync" Content="Sync" HorizontalAlignment="Left" Margin="382,46,0,0" VerticalAlignment="Top" Width="111" RenderTransformOrigin="0.347,-2.65" Height="73" Click="sync_Click"/>
-        <Button x:Name="syncManager" Content="Sync Manager" HorizontalAlignment="Left" Margin="64,46,0,0" VerticalAlignment="Top" Width="111" RenderTransformOrigin="0.347,-2.65" Height="73" Click="syncManager_Click"/>
+        <Button x:Name="sync" Content="Sync" HorizontalAlignment="Left" Margin="152,22,0,0" VerticalAlignment="Top" Width="111" RenderTransformOrigin="0.347,-2.65" Height="73" Click="sync_Click"/>
+        <Button x:Name="syncManager" Content="Sync Manager" HorizontalAlignment="Left" Margin="21,22,0,0" VerticalAlignment="Top" Width="111" RenderTransformOrigin="0.347,-2.65" Height="73" Click="syncManager_Click"/>
+        <ListView x:Name="Diffs" HorizontalAlignment="Left" Height="331" Margin="22,115,0,0" VerticalAlignment="Top" Width="695">
+            <ListView.Resources>
+                <Style TargetType="{x:Type GridViewColumnHeader}">
+                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                </Style>
+            </ListView.Resources>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Source" Width="200">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <TextBlock Text="{Binding Source.FullName, Mode=OneWay}"></TextBlock>
+                                </DockPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Destination" Width="200">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <TextBlock Text="{Binding Destination.FullName, Mode=OneWay}"></TextBlock>
+                                </DockPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Level" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <TextBlock Text="{Binding Relation, Mode=OneWay}"></TextBlock>
+                                </DockPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
     </Grid>
 </Window>

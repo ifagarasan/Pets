@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
 using Kore.IO;
 using Kore.IO.Management;
 using Kore.IO.Retrievers;
@@ -23,7 +25,7 @@ namespace SyncMaester
             _settingsFileInfo = new KoreFileInfo("settings.bin");
 
             _kontrol = new Kontrol(new SettingsManager<ISettings>(new BinarySerializer<ISettings>()),
-                new DiffBuilder(new DiffInfoBuilder(), new FileScanner(new FileRetriever()), new FolderDiffer()),
+                new DiffBuilder(new DiffInfoBuilder(), new FileScanner(new FileRetriever()), new FolderDiffer(new IdentityProvider())),
                 new FolderDiffProcessor(new DiffProcessor(new FileCopier())));
 
             _kontrol.ReadSettings(_settingsFileInfo);
@@ -43,9 +45,11 @@ namespace SyncMaester
 
             var diffResult = _kontrol.BuildDiff();
 
-            _kontrol.ProcessFolderDiff(diffResult);
+            var list = diffResult.FolderDiffResults.SelectMany(folderDiffResult => folderDiffResult.FolderDiff.Diffs).ToList();
 
-            MessageBox.Show("Processed diffs", Title);
+            Diffs.ItemsSource = list;
+
+            _kontrol.ProcessFolderDiff(diffResult);
         }
 
         private void syncManager_Click(object sender, RoutedEventArgs e)
@@ -53,6 +57,12 @@ namespace SyncMaester
             var sm = new SyncManager(_kontrol.Settings);
 
             sm.ShowDialog();
+        }
+
+        public class TodoItem
+        {
+            public string Title { get; set; }
+            public int Completion { get; set; }
         }
     }
 }

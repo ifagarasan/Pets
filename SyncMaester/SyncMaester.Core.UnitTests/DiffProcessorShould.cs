@@ -47,8 +47,8 @@ namespace SyncMaester.Core.UnitTests
             _mockDestinationFileInfo.Setup(m => m.FullName).Returns(Path.Combine(_destinationTopFolder, _fileName));
 
             _mockDiff = new Mock<IDiff>();
-            _mockDiff.Setup(m => m.SourceFileInfo).Returns(_mockSourceFileInfo.Object);
-            _mockDiff.Setup(m => m.DestinationFileInfo).Returns(_mockDestinationFileInfo.Object);
+            _mockDiff.Setup(m => m.Source).Returns(_mockSourceFileInfo.Object);
+            _mockDiff.Setup(m => m.Destination).Returns(_mockDestinationFileInfo.Object);
 
             _mockDiffInfo = new Mock<IDiffInfo>();
             _mockDiffInfo.Setup(m => m.Source).Returns(_mockSourceFolderInfo.Object);
@@ -65,7 +65,7 @@ namespace SyncMaester.Core.UnitTests
         [TestMethod]
         public void CopySourceToDestinationOnSourceNew()
         {
-            _mockDiff.Setup(m => m.Type).Returns(DiffType.SourceNew);
+            _mockDiff.Setup(m => m.Relation).Returns(DiffRelation.SourceNew);
 
             TestFileWasCopied();
         }
@@ -73,7 +73,7 @@ namespace SyncMaester.Core.UnitTests
         [TestMethod]
         public void CopySourceToDestinationOnSourceNewer()
         {
-            _mockDiff.Setup(m => m.Type).Returns(DiffType.SourceNewer);
+            _mockDiff.Setup(m => m.Relation).Returns(DiffRelation.SourceNewer);
 
             TestFileWasCopied();
         }
@@ -81,7 +81,7 @@ namespace SyncMaester.Core.UnitTests
         [TestMethod]
         public void CopyDestinationToSourceOnSourceOlder()
         {
-            _mockDiff.Setup(m => m.Type).Returns(DiffType.SourceOlder);
+            _mockDiff.Setup(m => m.Relation).Returns(DiffRelation.SourceOlder);
 
             _diffProcessor.Process(_mockDiff.Object, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);
 
@@ -91,7 +91,7 @@ namespace SyncMaester.Core.UnitTests
         [TestMethod]
         public void DeleteDestinationOnDestinationOrphan()
         {
-            _mockDiff.Setup(m => m.Type).Returns(DiffType.DestinationOrphan);
+            _mockDiff.Setup(m => m.Relation).Returns(DiffRelation.DestinationOrphan);
 
             _diffProcessor.Process(_mockDiff.Object, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);
 
@@ -103,7 +103,7 @@ namespace SyncMaester.Core.UnitTests
         [TestMethod]
         public void NotCopyOnIdentical()
         {
-            _mockDiff.Setup(m => m.Type).Returns(DiffType.Identical);
+            _mockDiff.Setup(m => m.Relation).Returns(DiffRelation.Identical);
 
             _diffProcessor.Process(_mockDiff.Object, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);
 

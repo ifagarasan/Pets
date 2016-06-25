@@ -21,30 +21,30 @@ namespace SyncMaester.Core
         {
             IsNotNull(diff, nameof(diff));
 
-            if (diff.Type == DiffType.Identical)
+            if (diff.Relation == DiffRelation.Identical)
                 return;
 
-            if (diff.Type == DiffType.DestinationOrphan)
+            if (diff.Relation == DiffRelation.DestinationOrphan)
             {
-                diff.DestinationFileInfo.Delete();
+                diff.Destination.Delete();
                 return;
             }
 
             IsNotNull(source, nameof(source));
             IsNotNull(destination, nameof(destination));
 
-            var sourceFileInfo = diff.SourceFileInfo;
-            var destinationFileInfo = diff.DestinationFileInfo;
+            var sourceFileInfo = diff.Source;
+            var destinationFileInfo = diff.Destination;
 
-            if (diff.Type == DiffType.SourceNew)
+            if (diff.Relation == DiffRelation.SourceNew)
             {
-                var sourceInnerFullPath = BuildRelativePath(diff.SourceFileInfo, source);
+                var sourceInnerFullPath = BuildRelativePath(diff.Source, source);
                 destinationFileInfo = new KoreFileInfo(Path.Combine(destination.FullName, sourceInnerFullPath));
             }
-            else if (diff.Type == DiffType.SourceOlder)
+            else if (diff.Relation == DiffRelation.SourceOlder)
             {
                 sourceFileInfo = destinationFileInfo;
-                destinationFileInfo = diff.SourceFileInfo;
+                destinationFileInfo = diff.Source;
             }
 
             _fileCopier.Copy(sourceFileInfo, destinationFileInfo);
