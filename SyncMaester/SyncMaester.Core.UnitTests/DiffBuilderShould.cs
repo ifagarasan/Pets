@@ -5,6 +5,7 @@ using Kore.IO.Sync;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Kore.IO.Exceptions;
+using Kore.IO.Retrievers;
 
 namespace SyncMaester.Core.UnitTests
 {
@@ -22,6 +23,7 @@ namespace SyncMaester.Core.UnitTests
         Mock<IDiffInfo> _mockDiffInfo;
         Mock<IKoreFolderInfo> _mockSourceFolderInfo;
         Mock<IKoreFolderInfo> _mockDestinationFolderInfo;
+        Mock<IKoreFileInfo> _mockScanEventFileInfo;
 
         [TestInitialize]
         public void Setup()
@@ -49,8 +51,11 @@ namespace SyncMaester.Core.UnitTests
 
             _mockFolderDiffer = new Mock<IFolderDiffer>();
 
+            _mockScanEventFileInfo = new Mock<IKoreFileInfo>();
+
             _mockFileScanner = new Mock<IFileScanner>();
-            _mockFileScanner.Setup(m => m.Scan(It.IsAny<IKoreFolderInfo>()));
+            _mockFileScanner.Setup(m => m.Scan(It.IsAny<IKoreFolderInfo>())).
+                Returns(new Mock<IFileScanResult>().Object).Raises(m => m.FileFound += null, _mockScanEventFileInfo.Object);
 
             _builder = new DiffBuilder(_mockDiffInfoBuilder.Object, _mockFileScanner.Object, _mockFolderDiffer.Object);
         }
@@ -91,6 +96,38 @@ namespace SyncMaester.Core.UnitTests
 
             _mockDiffInfoBuilder.Verify(m => m.BuildInfo(_mockSyncPair.Object));
 
+        }
+
+        [TestMethod]
+        public void RaiseSourceFileFoundOnBUildDiff()
+        {
+            bool called = false;
+
+            _builder.SourceFileFound += f =>
+            {
+                called = true;
+                Assert.AreSame(_mockScanEventFileInfo.Object, f);
+            };
+
+            _builder.Build(_mockSyncPair.Object);
+
+            Assert.IsTrue(called);
+        }
+
+        [TestMethod]
+        public void RaiseDestinationFileFoundOnBUildDiff()
+        {
+            bool called = false;
+
+            _builder.DestinationFileFound += f =>
+            {
+                called = true;
+                Assert.AreSame(_mockScanEventFileInfo.Object, f);
+            };
+
+            _builder.Build(_mockSyncPair.Object);
+
+            Assert.IsTrue(called);
         }
 
         [TestMethod]
