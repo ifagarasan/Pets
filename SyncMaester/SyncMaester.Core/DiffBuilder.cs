@@ -32,8 +32,8 @@ namespace SyncMaester.Core
             if (!diffInfo.Source.Exists)
                 throw new NodeNotFoundException();
 
-            var sourceScan = _fileScanner.Scan(diffInfo.Source.FullName);
-            var destinationScan = _fileScanner.Scan(diffInfo.Destination.FullName);
+            var sourceScan = _fileScanner.Scan(diffInfo.Source);
+            var destinationScan = _fileScanner.Scan(diffInfo.Destination);
 
             return _folderDiffer.BuildDiff(sourceScan, destinationScan);
         }

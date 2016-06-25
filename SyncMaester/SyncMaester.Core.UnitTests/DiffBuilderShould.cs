@@ -50,7 +50,7 @@ namespace SyncMaester.Core.UnitTests
             _mockFolderDiffer = new Mock<IFolderDiffer>();
 
             _mockFileScanner = new Mock<IFileScanner>();
-            _mockFileScanner.Setup(m => m.Scan(It.IsAny<string>()));
+            _mockFileScanner.Setup(m => m.Scan(It.IsAny<IKoreFolderInfo>()));
 
             _builder = new DiffBuilder(_mockDiffInfoBuilder.Object, _mockFileScanner.Object, _mockFolderDiffer.Object);
         }
@@ -125,7 +125,7 @@ namespace SyncMaester.Core.UnitTests
 
             _mockDiffInfoBuilder.Verify(m => m.BuildInfo(_mockSyncPair.Object));
 
-            _mockFileScanner.Verify(m => m.Scan(_mockDiffInfo.Object.Source.FullName));
+            _mockFileScanner.Verify(m => m.Scan(_mockDiffInfo.Object.Source));
         }
 
         [TestMethod]
@@ -135,7 +135,7 @@ namespace SyncMaester.Core.UnitTests
 
             _mockDiffInfoBuilder.Verify(m => m.BuildInfo(_mockSyncPair.Object));
 
-            _mockFileScanner.Verify(m => m.Scan(_mockDiffInfo.Object.Destination.FullName));
+            _mockFileScanner.Verify(m => m.Scan(_mockDiffInfo.Object.Destination));
         }
 
         //[TestMethod]
