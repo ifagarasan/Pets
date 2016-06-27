@@ -19,7 +19,7 @@ namespace SyncMaester.Core
 
         public void Process(IDiff diff, IKoreFolderInfo source, IKoreFolderInfo destination)
         {
-            IsNotNull(diff, nameof(diff));
+            IsNotNull(diff);
 
             if (diff.Relation == DiffRelation.Identical)
                 return;
@@ -30,8 +30,8 @@ namespace SyncMaester.Core
                 return;
             }
 
-            IsNotNull(source, nameof(source));
-            IsNotNull(destination, nameof(destination));
+            IsNotNull(source);
+            IsNotNull(destination);
 
             var sourceFileInfo = diff.Source;
             var destinationFileInfo = diff.Destination;

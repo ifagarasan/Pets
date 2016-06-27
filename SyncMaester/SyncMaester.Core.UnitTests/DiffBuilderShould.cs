@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Kore.IO.Exceptions;
 using Kore.IO.Retrievers;
+using Kore.Exceptions;
 
 namespace SyncMaester.Core.UnitTests
 {
@@ -65,14 +66,14 @@ namespace SyncMaester.Core.UnitTests
         //TODO: validity of diff info builder
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(NullException))]
         public void ThrowsArgumentNullExceptionIfFileScannerIsNull()
         {
             _builder = new DiffBuilder(_mockDiffInfoBuilder.Object, null, _mockFolderDiffer.Object);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(NullException))]
         public void ThrowsArgumentNullExceptionIfFolderDifferIsNull()
         {
             _builder = new DiffBuilder(_mockDiffInfoBuilder.Object, _mockFileScanner.Object, null);
@@ -83,7 +84,7 @@ namespace SyncMaester.Core.UnitTests
         #region BuildDiff
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(NullException))]
         public void ThrowsArgumentNullExceptionIfISyncPairIsNull()
         {
             _builder.Build(null);

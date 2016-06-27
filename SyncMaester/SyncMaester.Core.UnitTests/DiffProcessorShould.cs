@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Kore.Exceptions;
 using Kore.IO;
 using Kore.IO.Management;
 using Kore.IO.Sync;
@@ -56,7 +57,7 @@ namespace SyncMaester.Core.UnitTests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(NullException))]
         public void ValidateFileCopierOnInit()
         {
             _diffProcessor = new DiffProcessor(null);
@@ -111,7 +112,7 @@ namespace SyncMaester.Core.UnitTests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(NullException))]
         public void ValidatesDiffOnProcess()
         {
             _diffProcessor.Process(null, _mockSourceFolderInfo.Object, _mockDestinationFolderInfo.Object);

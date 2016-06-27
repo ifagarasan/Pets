@@ -15,8 +15,8 @@ namespace SyncMaester.Core
 
         public DiffBuilder(IDiffInfoBuilder diffInfoBuilder, IFileScanner fileScanner, IFolderDiffer folderDiffer)
         {
-            IsNotNull(fileScanner, nameof(fileScanner));
-            IsNotNull(folderDiffer, nameof(folderDiffer));
+            IsNotNull(fileScanner);
+            IsNotNull(folderDiffer);
 
             _diffInfoBuilder = diffInfoBuilder;
             _fileScanner = fileScanner;
@@ -29,7 +29,7 @@ namespace SyncMaester.Core
 
         public IFolderDiff Build(ISyncPair syncPair)
         {
-            IsNotNull(syncPair, nameof(syncPair));
+            IsNotNull(syncPair);
 
             var diffInfo = _diffInfoBuilder.BuildInfo(syncPair);
 

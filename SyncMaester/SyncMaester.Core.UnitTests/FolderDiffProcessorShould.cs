@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Kore.Exceptions;
 using Kore.IO;
 using Kore.IO.Sync;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -29,7 +30,7 @@ namespace SyncMaester.Core.UnitTests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(NullException))]
         public void ValidatefDiffProcessorOnInit()
         {
             _folderDiffProcessor = new FolderDiffProcessor(null);
@@ -67,21 +68,21 @@ namespace SyncMaester.Core.UnitTests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(NullException))]
         public void ValidatesFolderDiffResultOnProcess()
         {
             _folderDiffProcessor.Process(null);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(NullException))]
         public void ValidatesFolderDiffOnProcess()
         {
             _folderDiffProcessor.Process(_mockFolderDiffResult.Object);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(NullException))]
         public void ValidatesFolderDiffDiffsOnProcess()
         {
             _mockFolderDiffResult.Setup(m => m.FolderDiff).Returns(new Mock<IFolderDiff>().Object);

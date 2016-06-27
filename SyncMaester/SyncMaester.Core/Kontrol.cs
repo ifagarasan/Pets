@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Kore.IO;
 using Kore.Settings;
@@ -8,19 +9,16 @@ namespace SyncMaester.Core
 {
     public class Kontrol : IKontrol
     {
-        private readonly IDiffBuilder _diffBuilder;
-        private readonly IFolderDiffProcessor _folderDiffProcessor;
         private readonly ISettingsManager<ISettings> _settingsManager;
+        private readonly ISyncManager _syncManager;
 
-        public Kontrol(ISettingsManager<ISettings> settingsManager, IDiffBuilder diffBuilder, IFolderDiffProcessor folderDiffProcessor)
+        public Kontrol(ISettingsManager<ISettings> settingsManager, ISyncManager syncManager)
         {
-            IsNotNull(settingsManager, nameof(settingsManager));
-            IsNotNull(diffBuilder, nameof(diffBuilder));
-            IsNotNull(folderDiffProcessor, nameof(folderDiffProcessor));
+            IsNotNull(settingsManager);
+            IsNotNull(syncManager);
 
             _settingsManager = settingsManager;
-            _diffBuilder = diffBuilder;
-            _folderDiffProcessor = folderDiffProcessor;
+            _syncManager = syncManager;
         }
 
         public ISettings Settings => _settingsManager.Data;
@@ -29,32 +27,34 @@ namespace SyncMaester.Core
 
         public void AddSyncPair(ISyncPair syncPair)
         {
-            IsNotNull(syncPair, nameof(syncPair));
+            IsNotNull(syncPair);
 
             _settingsManager.Data.SyncPairs.Add(syncPair);
         }
 
-        public IDiffResult BuildDiff()
+        public void Sync()
         {
-            IsNotNull(_settingsManager.Data.SyncPairs);
-
-            List<IFolderDiffResult> folderDiffResults = _settingsManager.Data.SyncPairs.Select(s => BuildFolderDiffResult(s)).ToList();
-
-            return new DiffResult(folderDiffResults);
+            _syncManager.Sync(Settings);
         }
 
-        private IFolderDiffResult BuildFolderDiffResult(ISyncPair syncPair)
-        {
-            return new FolderDiffResult(syncPair, _diffBuilder.Build(syncPair));
-        }
+        //public IDiffResult BuildDiff()
+        //{
+        //    IsNotNull(_settingsManager.Data.SyncPairs);
 
-        public void ProcessFolderDiff(IDiffResult diffResult)
-        {
-            IsNotNull(diffResult);
+        //    var folderDiffResults = _settingsManager.Data.SyncPairs.Select(s => BuildFolderDiffResult(s)).ToList();
 
-            foreach (var folderDiffResult in diffResult.FolderDiffResults)
-                _folderDiffProcessor.Process(folderDiffResult);
-        }
+        //    return new DiffResult(folderDiffResults);
+        //}
+
+        
+
+        //public void ProcessFolderDiff(IDiffResult diffResult)
+        //{
+        //    IsNotNull(diffResult);
+
+        //    foreach (var folderDiffResult in diffResult.FolderDiffResults)
+        //        _folderDiffProcessor.Process(folderDiffResult);
+        //}
 
         public void WriteSettings(IKoreFileInfo destination)
         {

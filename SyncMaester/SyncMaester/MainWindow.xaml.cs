@@ -25,8 +25,8 @@ namespace SyncMaester
             _settingsFileInfo = new KoreFileInfo("settings.bin");
 
             _kontrol = new Kontrol(new SettingsManager<ISettings>(new BinarySerializer<ISettings>()),
-                new DiffBuilder(new DiffInfoBuilder(), new FileScanner(new FileRetriever()), new FolderDiffer(new IdentityProvider())),
-                new FolderDiffProcessor(new DiffProcessor(new FileCopier())));
+                new Core.SyncManager(new DiffBuilder(new DiffInfoBuilder(), new FileScanner(new FileRetriever()),
+                new FolderDiffer(new IdentityProvider())), new FolderDiffProcessor(new DiffProcessor(new FileCopier()))));
 
             _kontrol.ReadSettings(_settingsFileInfo);
 
@@ -43,13 +43,9 @@ namespace SyncMaester
                 return;
             }
 
-            var diffResult = _kontrol.BuildDiff();
+            _kontrol.Sync();
 
-            var list = diffResult.FolderDiffResults.SelectMany(folderDiffResult => folderDiffResult.FolderDiff.Diffs).ToList();
-
-            Diffs.ItemsSource = list;
-
-            _kontrol.ProcessFolderDiff(diffResult);
+            //Diffs.ItemsSource = list;
         }
 
         private void syncManager_Click(object sender, RoutedEventArgs e)

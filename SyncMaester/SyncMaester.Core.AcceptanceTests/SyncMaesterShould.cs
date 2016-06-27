@@ -15,30 +15,31 @@ namespace SyncMaester.Core.AcceptanceTests
     [TestClass]
     public class SyncMaesterShould
     {
-        private static readonly string _currentWorkingFolder = Path.Combine(TestRoot, DateTime.Now.Ticks.ToString());
+        private static readonly string CurrentWorkingFolder = Path.Combine(TestRoot, DateTime.Now.Ticks.ToString());
         private string _destinationFolder;
         private string _sourceFolder;
         readonly string _primaryTestFileName = "file1.txt";
 
-        IDiffBuilder _diffBuilder;
-        IFolderDiffProcessor _folderDiffProcessor;
+        ISyncManager _syncManager;
         IKontrol _kontrol;
         private ISettingsManager<ISettings> _settingsManager;
+        private string _currentTest;
+        private ISyncPair _syncPair;
 
         [TestInitialize]
         public void Setup()
         {
             EnsureFolderExists(TestRoot);
-            EnsureFolderExists(_currentWorkingFolder);
+            EnsureFolderExists(CurrentWorkingFolder);
 
-            _diffBuilder = new DiffBuilder(new DiffInfoBuilder(), new FileScanner(new FileRetriever()), new FolderDiffer(new IdentityProvider()));
-            _folderDiffProcessor = new FolderDiffProcessor(new DiffProcessor(new FileCopier()));
             _settingsManager = new SettingsManager<ISettings>(new BinarySerializer<ISettings>())
             {
                 Data = new Settings()
             };
 
-            _kontrol = new Kontrol(_settingsManager, _diffBuilder, _folderDiffProcessor);
+            _syncManager = new SyncManager(new DiffBuilder(new DiffInfoBuilder(), new FileScanner(new FileRetriever()),
+                new FolderDiffer(new IdentityProvider())), new FolderDiffProcessor(new DiffProcessor(new FileCopier())));
+            _kontrol = new Kontrol(_settingsManager, _syncManager);
         }
 
         #region File Moving
@@ -46,28 +47,12 @@ namespace SyncMaester.Core.AcceptanceTests
         [TestMethod]
         public void CopyANewSourceFile()
         {
-            var currentTest = Path.Combine(_currentWorkingFolder, "test1");
-
-            _sourceFolder = Path.Combine(currentTest, "src");
-            _destinationFolder = Path.Combine(currentTest, "dest");
-
-            EnsureFolderExists(_destinationFolder);
+            SetupCurrentTestFolder("test-new-source-file");
 
             var sourceFileInfo = new KoreFileInfo(Path.Combine(_sourceFolder, _primaryTestFileName));
             sourceFileInfo.EnsureExists();
 
-            var syncPair = new SyncPair
-            {
-                Source = _sourceFolder,
-                Destination = _destinationFolder,
-                Level = SyncLevel.Flat
-            };
-
-            _kontrol.Settings.SyncPairs.Add(syncPair);
-
-            var diffResult = _kontrol.BuildDiff();
-
-            _kontrol.ProcessFolderDiff(diffResult);
+            _kontrol.Sync();
 
             var destinationFileInfo = new KoreFileInfo(Path.Combine(_destinationFolder, _primaryTestFileName));
 
@@ -77,10 +62,7 @@ namespace SyncMaester.Core.AcceptanceTests
         [TestMethod]
         public void CopyANewerSourceFile()
         {
-            var currentTest = Path.Combine(_currentWorkingFolder, "test2");
-
-            _sourceFolder = Path.Combine(currentTest, "src");
-            _destinationFolder = Path.Combine(currentTest, "dest");
+            SetupCurrentTestFolder("test-newer-source-file");
 
             var now = DateTime.Now;
 
@@ -92,29 +74,15 @@ namespace SyncMaester.Core.AcceptanceTests
             destinationFileInfo.EnsureExists();
             destinationFileInfo.LastWriteTime = now.AddSeconds(-1);
 
-            var syncPair = new SyncPair
-            {
-                Source = _sourceFolder,
-                Destination = _destinationFolder,
-                Level = SyncLevel.Flat
-            };
+            _kontrol.Sync();
 
-            _kontrol.Settings.SyncPairs.Add(syncPair);
-
-            var diffResult = _kontrol.BuildDiff();
-
-            _kontrol.ProcessFolderDiff(diffResult);
-            
             Assert.AreEqual(now, destinationFileInfo.LastWriteTime);
         }
 
         [TestMethod]
         public void CopyANewerDestinationFile()
         {
-            var currentTest = Path.Combine(_currentWorkingFolder, "test3");
-
-            _sourceFolder = Path.Combine(currentTest, "src");
-            _destinationFolder = Path.Combine(currentTest, "dest");
+            SetupCurrentTestFolder("test-newer-destination-file");
 
             var now = DateTime.Now;
 
@@ -126,18 +94,7 @@ namespace SyncMaester.Core.AcceptanceTests
             destinationFileInfo.EnsureExists();
             destinationFileInfo.LastWriteTime = now;
 
-            var syncPair = new SyncPair
-            {
-                Source = _sourceFolder,
-                Destination = _destinationFolder,
-                Level = SyncLevel.Flat
-            };
-
-            _kontrol.Settings.SyncPairs.Add(syncPair);
-
-            var diffResult = _kontrol.BuildDiff();
-
-            _kontrol.ProcessFolderDiff(diffResult);
+            _kontrol.Sync();
 
             Assert.AreEqual(now, sourceFileInfo.LastWriteTime);
         }
@@ -145,29 +102,12 @@ namespace SyncMaester.Core.AcceptanceTests
         [TestMethod]
         public void DeleteAnOrphanDestinationFile()
         {
-            var currentTest = Path.Combine(_currentWorkingFolder, "test4");
-
-            _sourceFolder = Path.Combine(currentTest, "src");
-            EnsureFolderExists(_sourceFolder);
-
-            _destinationFolder = Path.Combine(currentTest, "dest");
-            EnsureFolderExists(_destinationFolder);
+            SetupCurrentTestFolder("test-oprhanr-destination-file");
 
             var destinationFileInfo = new KoreFileInfo(Path.Combine(_destinationFolder, _primaryTestFileName));
             destinationFileInfo.EnsureExists();
 
-            var syncPair = new SyncPair
-            {
-                Source = _sourceFolder,
-                Destination = _destinationFolder,
-                Level = SyncLevel.Flat
-            };
-
-            _kontrol.Settings.SyncPairs.Add(syncPair);
-
-            var diffResult = _kontrol.BuildDiff();
-
-            _kontrol.ProcessFolderDiff(diffResult);
+            _kontrol.Sync();
 
             Assert.IsFalse(destinationFileInfo.Exists);
         }
@@ -175,10 +115,7 @@ namespace SyncMaester.Core.AcceptanceTests
         [TestMethod]
         public void NotCopyAnIdenticalFile()
         {
-            var currentTest = Path.Combine(_currentWorkingFolder, "test-identical-files");
-
-            _sourceFolder = Path.Combine(currentTest, "src");
-            _destinationFolder = Path.Combine(currentTest, "dest");
+            SetupCurrentTestFolder("test-identical-files");
 
             var sourceFileInfo = new KoreFileInfo(Path.Combine(_sourceFolder, _primaryTestFileName));
             sourceFileInfo.EnsureExists();
@@ -196,18 +133,8 @@ namespace SyncMaester.Core.AcceptanceTests
             sourceFileInfo.LastWriteTime = now;
             destinationFileInfo.LastWriteTime = now;
 
-            var syncPair = new SyncPair
-            {
-                Source = _sourceFolder,
-                Destination = _destinationFolder,
-                Level = SyncLevel.Flat
-            };
 
-            _kontrol.Settings.SyncPairs.Add(syncPair);
-
-            var diffResult = _kontrol.BuildDiff();
-
-            _kontrol.ProcessFolderDiff(diffResult);
+            _kontrol.Sync();
 
             Assert.IsTrue(destinationFileInfo.Exists);
             Assert.IsTrue(sourceFileInfo.Exists);
@@ -217,18 +144,18 @@ namespace SyncMaester.Core.AcceptanceTests
         [TestMethod]
         public void SupportMultipleSyncPairs()
         {
-            var currentTest = Path.Combine(_currentWorkingFolder, "test-multiple-sync-pairs");
+            _currentTest = Path.Combine(CurrentWorkingFolder, "test-multiple-sync-pairs");
 
-            var sourceFolder1 = Path.Combine(currentTest, "src1");
+            var sourceFolder1 = Path.Combine(_currentTest, "src1");
             EnsureFolderExists(sourceFolder1);
 
-            var sourceFolder2 = Path.Combine(currentTest, "src2");
+            var sourceFolder2 = Path.Combine(_currentTest, "src2");
             EnsureFolderExists(sourceFolder2);
 
-            var destinationFolder1 = Path.Combine(currentTest, "dest1");
+            var destinationFolder1 = Path.Combine(_currentTest, "dest1");
             EnsureFolderExists(destinationFolder1);
 
-            var destinationFolder2 = Path.Combine(currentTest, "dest2");
+            var destinationFolder2 = Path.Combine(_currentTest, "dest2");
             EnsureFolderExists(destinationFolder2);
 
             var fileName1 = "file1.txt";
@@ -253,9 +180,7 @@ namespace SyncMaester.Core.AcceptanceTests
                 Level = SyncLevel.Flat
             });
 
-            var diffResult = _kontrol.BuildDiff();
-
-            _kontrol.ProcessFolderDiff(diffResult);
+            _kontrol.Sync();
 
             var destinationFileInfo1 = new KoreFileInfo(Path.Combine(destinationFolder1, fileName1));
             var destinationFileInfo2 = new KoreFileInfo(Path.Combine(destinationFolder2, fileName2));
@@ -271,28 +196,12 @@ namespace SyncMaester.Core.AcceptanceTests
         [TestMethod]
         public void CopiesContentAtDestinationUnderSourceParentIfLevelIsParent()
         {
-            var currentTest = Path.Combine(_currentWorkingFolder, "test-sync-options-copy-content");
-
-            _sourceFolder = Path.Combine(currentTest, "src");
-            _destinationFolder = Path.Combine(currentTest, "dest");
-
-            EnsureFolderExists(_destinationFolder);
+            SetupCurrentTestFolder("test-sync-options-copy-content", SyncLevel.Parent);
 
             var sourceFileInfo = new KoreFileInfo(Path.Combine(_sourceFolder, _primaryTestFileName));
             sourceFileInfo.EnsureExists();
 
-            var syncPair = new SyncPair
-            {
-                Source = _sourceFolder,
-                Destination = _destinationFolder,
-                Level = SyncLevel.Parent
-            };
-
-            _kontrol.Settings.SyncPairs.Add(syncPair);
-
-            var diffResult = _kontrol.BuildDiff();
-
-            _kontrol.ProcessFolderDiff(diffResult);
+            _kontrol.Sync();
 
             var destinationFileInfo = new KoreFileInfo(Path.Combine(_destinationFolder, "src", _primaryTestFileName));
 
@@ -306,13 +215,13 @@ namespace SyncMaester.Core.AcceptanceTests
         [TestMethod]
         public void WriteSettings()
         {
-            var currentTest = Path.Combine(_currentWorkingFolder, "test5");
+            _currentTest = Path.Combine(CurrentWorkingFolder, "test5");
 
-            EnsureFolderExists(currentTest);
+            EnsureFolderExists(_currentTest);
 
-            _settingsManager.Data.SyncPairs.Add(new SyncPair { Source = currentTest, Destination = currentTest});
+            _settingsManager.Data.SyncPairs.Add(new SyncPair { Source = _currentTest, Destination = _currentTest});
 
-            var settingsFile = new KoreFileInfo(Path.Combine(currentTest, "settings.bin"));
+            var settingsFile = new KoreFileInfo(Path.Combine(_currentTest, "settings.bin"));
 
             _kontrol.WriteSettings(settingsFile);
 
@@ -321,24 +230,22 @@ namespace SyncMaester.Core.AcceptanceTests
 
         public void ReadSettings()
         {
-            var currentTest = Path.Combine(_currentWorkingFolder, "test6");
+            _currentTest = Path.Combine(CurrentWorkingFolder, "test6");
 
-            EnsureFolderExists(currentTest);
+            EnsureFolderExists(_currentTest);
 
             var sourceFolder = "C:\\Music";
             var destinationFolder = "D:\\Backups\\Music";
 
-            _settingsManager.Data.SyncPairs.Add(new SyncPair { Source = currentTest, Destination = currentTest });
+            _settingsManager.Data.SyncPairs.Add(new SyncPair { Source = _currentTest, Destination = _currentTest });
 
-            var settingsFile = new KoreFileInfo(Path.Combine(currentTest, "settings.bin"));
+            var settingsFile = new KoreFileInfo(Path.Combine(_currentTest, "settings.bin"));
 
             _kontrol.WriteSettings(settingsFile);
 
             var settingsManager = new SettingsManager<ISettings>(new BinarySerializer<ISettings>());
 
-            var kontrol = new Kontrol(settingsManager,
-                new DiffBuilder(new DiffInfoBuilder(), new FileScanner(new FileRetriever()), new FolderDiffer(new IdentityProvider())),
-                new FolderDiffProcessor(new DiffProcessor(new FileCopier())));
+            var kontrol = new Kontrol(settingsManager, _syncManager);
 
             kontrol.ReadSettings(settingsFile);
 
@@ -352,5 +259,25 @@ namespace SyncMaester.Core.AcceptanceTests
         }
 
         #endregion
+
+        private void SetupCurrentTestFolder(string testFolder, SyncLevel syncLevel = SyncLevel.Flat)
+        {
+            _currentTest = Path.Combine(CurrentWorkingFolder, testFolder);
+
+            _sourceFolder = Path.Combine(_currentTest, "src");
+            _destinationFolder = Path.Combine(_currentTest, "dest");
+
+            EnsureFolderExists(_sourceFolder);
+            EnsureFolderExists(_destinationFolder);
+
+            _syncPair = new SyncPair
+            {
+                Source = _sourceFolder,
+                Destination = _destinationFolder,
+                Level = syncLevel
+            };
+
+            _kontrol.Settings.SyncPairs.Add(_syncPair);
+        }
     }
 }
