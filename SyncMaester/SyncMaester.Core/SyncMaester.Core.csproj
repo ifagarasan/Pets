@@ -69,11 +69,14 @@
     <Compile Include="IFolderDiffProcessor.cs" />
     <Compile Include="IFolderDiffResult.cs" />
     <Compile Include="IKontrol.cs" />
+    <Compile Include="IScanInfo.cs" />
     <Compile Include="ISettings.cs" />
     <Compile Include="ISyncManager.cs" />
     <Compile Include="ISyncPair.cs" />
     <Compile Include="Kontrol.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScanInfo.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SyncLevel.cs" />
     <Compile Include="SyncManager.cs" />

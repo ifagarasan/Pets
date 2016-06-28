@@ -4,6 +4,8 @@ namespace SyncMaester.Core
 {
     public interface ISyncManager
     {
-        void Sync(ISettings syncPairs);
+        IScanInfo ScanInfo { get; }
+
+        void Sync(ISettings settings);
     }
 }

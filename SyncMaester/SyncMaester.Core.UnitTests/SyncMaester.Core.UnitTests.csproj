@@ -84,6 +84,7 @@
     <Compile Include="FolderDiffProcessorShould.cs" />
     <Compile Include="DiffProcessorShould.cs" />
     <Compile Include="DiffBuilderShould.cs" />
+    <Compile Include="ScanInfoShould.cs" />
     <Compile Include="SyncManagerShould.cs" />
     <Compile Include="KontrolShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

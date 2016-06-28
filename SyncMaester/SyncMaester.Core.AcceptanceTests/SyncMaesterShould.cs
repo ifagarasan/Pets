@@ -38,7 +38,9 @@ namespace SyncMaester.Core.AcceptanceTests
             };
 
             _syncManager = new SyncManager(new DiffBuilder(new DiffInfoBuilder(), new FileScanner(new FileRetriever()),
-                new FolderDiffer(new IdentityProvider())), new FolderDiffProcessor(new DiffProcessor(new FileCopier())));
+                new FolderDiffer(new IdentityProvider())), new FolderDiffProcessor(new DiffProcessor(new FileCopier())),
+                new ScanInfo());
+
             _kontrol = new Kontrol(_settingsManager, _syncManager);
         }
 
@@ -191,7 +193,7 @@ namespace SyncMaester.Core.AcceptanceTests
 
         #endregion
 
-        #region Sync Params
+        #region Sync Options
 
         [TestMethod]
         public void CopiesContentAtDestinationUnderSourceParentIfLevelIsParent()
@@ -259,6 +261,27 @@ namespace SyncMaester.Core.AcceptanceTests
         }
 
         #endregion
+
+        [TestMethod]
+        public void MakeScanInformationAvailable()
+        {
+            SetupCurrentTestFolder("test-scan-info");
+
+            var now = DateTime.Now;
+
+            var sourceFileInfo = new KoreFileInfo(Path.Combine(_sourceFolder, _primaryTestFileName));
+            sourceFileInfo.EnsureExists();
+            sourceFileInfo.LastWriteTime = now;
+
+            var destinationFileInfo = new KoreFileInfo(Path.Combine(_destinationFolder, _primaryTestFileName));
+            destinationFileInfo.EnsureExists();
+            destinationFileInfo.LastWriteTime = now.AddSeconds(-1);
+
+            _kontrol.Sync();
+
+            Assert.AreEqual(1u, _kontrol.ScanInfo.SourceFiles);
+            Assert.AreEqual(1u, _kontrol.ScanInfo.DestinationFiles);
+        }
 
         private void SetupCurrentTestFolder(string testFolder, SyncLevel syncLevel = SyncLevel.Flat)
         {

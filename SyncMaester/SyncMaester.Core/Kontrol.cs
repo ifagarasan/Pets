@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Kore.IO;
 using Kore.Settings;
 using static Kore.Validation.ObjectValidation;
@@ -23,38 +24,11 @@ namespace SyncMaester.Core
 
         public ISettings Settings => _settingsManager.Data;
 
+        public IScanInfo ScanInfo => _syncManager.ScanInfo;
+
         public IReadOnlyCollection<ISyncPair> SyncPairs => _settingsManager.Data.SyncPairs.AsReadOnly();
 
-        public void AddSyncPair(ISyncPair syncPair)
-        {
-            IsNotNull(syncPair);
-
-            _settingsManager.Data.SyncPairs.Add(syncPair);
-        }
-
-        public void Sync()
-        {
-            _syncManager.Sync(Settings);
-        }
-
-        //public IDiffResult BuildDiff()
-        //{
-        //    IsNotNull(_settingsManager.Data.SyncPairs);
-
-        //    var folderDiffResults = _settingsManager.Data.SyncPairs.Select(s => BuildFolderDiffResult(s)).ToList();
-
-        //    return new DiffResult(folderDiffResults);
-        //}
-
-        
-
-        //public void ProcessFolderDiff(IDiffResult diffResult)
-        //{
-        //    IsNotNull(diffResult);
-
-        //    foreach (var folderDiffResult in diffResult.FolderDiffResults)
-        //        _folderDiffProcessor.Process(folderDiffResult);
-        //}
+        public void Sync() => _syncManager.Sync(Settings);
 
         public void WriteSettings(IKoreFileInfo destination)
         {

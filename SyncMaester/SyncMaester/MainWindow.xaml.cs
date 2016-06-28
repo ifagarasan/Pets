@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using Kore.IO;
 using Kore.IO.Management;
@@ -26,7 +27,8 @@ namespace SyncMaester
 
             _kontrol = new Kontrol(new SettingsManager<ISettings>(new BinarySerializer<ISettings>()),
                 new Core.SyncManager(new DiffBuilder(new DiffInfoBuilder(), new FileScanner(new FileRetriever()),
-                new FolderDiffer(new IdentityProvider())), new FolderDiffProcessor(new DiffProcessor(new FileCopier()))));
+                new FolderDiffer(new IdentityProvider())), new FolderDiffProcessor(new DiffProcessor(new FileCopier())),
+                new ScanInfo()));
 
             _kontrol.ReadSettings(_settingsFileInfo);
 
@@ -43,7 +45,10 @@ namespace SyncMaester
                 return;
             }
 
-            _kontrol.Sync();
+            sourceFiles.DataContext = _kontrol.ScanInfo;
+            destinationFiles.DataContext = _kontrol.ScanInfo;
+
+            Task.Run(() => _kontrol.Sync());
 
             //Diffs.ItemsSource = list;
         }
