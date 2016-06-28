@@ -40,6 +40,8 @@ namespace SyncMaester.Core
 
             foreach (var diff in settings.SyncPairs.Select(BuildFolderDiffResult))
                 _folderDiffProcessor.Process(diff);
+
+            ScanInfo.Complete();
         }
 
         private IFolderDiffResult BuildFolderDiffResult(ISyncPair syncPair)

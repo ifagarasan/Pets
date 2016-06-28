@@ -10,7 +10,7 @@
     <Grid x:Name="main">
         <Button x:Name="sync" Content="Sync" HorizontalAlignment="Left" Margin="152,22,0,0" VerticalAlignment="Top" Width="111" RenderTransformOrigin="0.347,-2.65" Height="73" Click="sync_Click"/>
         <Button x:Name="syncManager" Content="Sync Manager" HorizontalAlignment="Left" Margin="21,22,0,0" VerticalAlignment="Top" Width="111" RenderTransformOrigin="0.347,-2.65" Height="73" Click="syncManager_Click"/>
-        <ListView x:Name="Diffs" HorizontalAlignment="Left" Height="330" Margin="22,116,0,0" VerticalAlignment="Top" Width="695">
+        <ListView x:Name="Diffs" HorizontalAlignment="Left" Height="289" Margin="22,157,0,0" VerticalAlignment="Top" Width="695">
             <ListView.Resources>
                 <Style TargetType="{x:Type GridViewColumnHeader}">
                     <Setter Property="HorizontalContentAlignment" Value="Left"/>
@@ -48,11 +48,13 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        
+
         <Label x:Name="label" Content="Source Files:" HorizontalAlignment="Left" Margin="283,22,0,0" VerticalAlignment="Top"/>
         <Label x:Name="sourceFiles" Content="{Binding SourceFiles, Mode=OneWay}" HorizontalAlignment="Left" Margin="394,22,0,0" VerticalAlignment="Top" RenderTransformOrigin="1.474,0.577"/>
         <Label x:Name="label_Copy1" Content="Destination Files:" HorizontalAlignment="Left" Margin="283,53,0,0" VerticalAlignment="Top"/>
         <Label x:Name="destinationFiles" Content="{Binding DestinationFiles, Mode=OneWay}" HorizontalAlignment="Left" Margin="394,53,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="label_Copy" Content="Status:" HorizontalAlignment="Left" Margin="283,85,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="syncStatus" Content="{Binding Status, Mode=OneWay}" HorizontalAlignment="Left" Margin="394,85,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>

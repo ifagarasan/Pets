@@ -281,6 +281,7 @@ namespace SyncMaester.Core.AcceptanceTests
 
             Assert.AreEqual(1u, _kontrol.ScanInfo.SourceFiles);
             Assert.AreEqual(1u, _kontrol.ScanInfo.DestinationFiles);
+            Assert.AreEqual(ScanStatus.Complete, _kontrol.ScanInfo.Status);
         }
 
         private void SetupCurrentTestFolder(string testFolder, SyncLevel syncLevel = SyncLevel.Flat)

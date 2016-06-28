@@ -49,5 +49,13 @@ namespace SyncMaester.Core.UnitTests
             Assert.AreEqual(0u, _scanInfo.SourceFiles);
             Assert.AreEqual(0u, _scanInfo.DestinationFiles);
         }
+
+        [TestMethod]
+        public void CompleteSetsStatusToCompleted()
+        {
+            _scanInfo.Complete();
+
+            Assert.AreEqual(ScanStatus.Complete, _scanInfo.Status);
+        }
     }
 }

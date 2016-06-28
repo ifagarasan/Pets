@@ -9,6 +9,7 @@ namespace SyncMaester.Core
     {
         private uint _sourceFiles;
         private uint _destinationFiles;
+        private ScanStatus _status;
 
         public uint SourceFiles
         {
@@ -20,6 +21,12 @@ namespace SyncMaester.Core
         {
             get { return _destinationFiles; }
             set { _destinationFiles = value; OnPropertyChanged(nameof(DestinationFiles)); }
+        }
+
+        public ScanStatus Status
+        {
+            get { return _status; }
+            set { _status = value; OnPropertyChanged(nameof(Status)); }
         }
 
         public void Clear()
@@ -35,6 +42,11 @@ namespace SyncMaester.Core
         public void NewDestinationFileFound(IKoreFileInfo file)
         {
             DestinationFiles++;
+        }
+
+        public void Complete()
+        {
+            Status = ScanStatus.Complete;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

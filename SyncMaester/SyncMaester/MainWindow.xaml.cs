@@ -34,6 +34,10 @@ namespace SyncMaester
 
             InitializeComponent();
 
+            sourceFiles.DataContext = _kontrol.ScanInfo;
+            destinationFiles.DataContext = _kontrol.ScanInfo;
+            syncStatus.DataContext = _kontrol.ScanInfo;
+
             Closing += (sender, args) => { _kontrol.WriteSettings(_settingsFileInfo); };
         }
 
@@ -44,9 +48,6 @@ namespace SyncMaester
                 MessageBox.Show("Nothing to sync", Title);
                 return;
             }
-
-            sourceFiles.DataContext = _kontrol.ScanInfo;
-            destinationFiles.DataContext = _kontrol.ScanInfo;
 
             Task.Run(() => _kontrol.Sync());
 
