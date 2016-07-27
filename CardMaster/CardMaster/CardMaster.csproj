@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Deck\Repository\ICardRepository.cs" />
     <Compile Include="Infrastructure\Repository\CardRepository.cs" />
+    <Compile Include="Infrastructure\Repository\MongoCardRepository.cs" />
     <Compile Include="Model\Deck\Card.cs" />
     <Compile Include="Model\Deck\CardContent.cs" />
     <Compile Include="Model\Deck\Deck.cs" />

@@ -6,7 +6,7 @@ using CardMaster.Infrastructure.Repository;
 namespace CardMaster.FeatureTests
 {
     [TestClass]
-    public class CardMaster
+    public class Deck
     {
         private const int CardId = 1;
 

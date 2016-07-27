@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{280A4F64-3240-49B3-832A-E2AE5E76DC29}</ProjectGuid>
+    <ProjectGuid>{B7877F68-6546-44B2-94EA-EA2E7C42FCC4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CardMaster.FeatureTests</RootNamespace>
-    <AssemblyName>CardMaster.FeatureTests</AssemblyName>
+    <RootNamespace>CardMaster.IntegrationTests</RootNamespace>
+    <AssemblyName>CardMaster.IntegrationTests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -50,7 +50,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Deck.cs" />
+    <Compile Include="MongoCardRepositoryShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
