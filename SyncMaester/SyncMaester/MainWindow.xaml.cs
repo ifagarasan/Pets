@@ -28,15 +28,15 @@ namespace SyncMaester
             _kontrol = new Kontrol(new SettingsManager<ISettings>(new BinarySerializer<ISettings>()),
                 new Core.SyncManager(new DiffBuilder(new DiffInfoBuilder(), new FileScanner(new FileRetriever()),
                 new FolderDiffer(new IdentityProvider())), new FolderDiffProcessor(new DiffProcessor(new FileCopier())),
-                new ScanInfo()));
+                new SyncInfo()));
 
             _kontrol.ReadSettings(_settingsFileInfo);
 
             InitializeComponent();
 
-            sourceFiles.DataContext = _kontrol.ScanInfo;
-            destinationFiles.DataContext = _kontrol.ScanInfo;
-            syncStatus.DataContext = _kontrol.ScanInfo;
+            sourceFiles.DataContext = _kontrol.SyncInfo;
+            destinationFiles.DataContext = _kontrol.SyncInfo;
+            syncStatus.DataContext = _kontrol.SyncInfo;
 
             Closing += (sender, args) => { _kontrol.WriteSettings(_settingsFileInfo); };
         }

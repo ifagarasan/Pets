@@ -5,11 +5,11 @@ using SyncMaester.Core.Annotations;
 
 namespace SyncMaester.Core
 {
-    public class ScanInfo : IScanInfo, INotifyPropertyChanged
+    public class SyncInfo : ISyncInfo, INotifyPropertyChanged
     {
         private uint _sourceFiles;
         private uint _destinationFiles;
-        private ScanStatus _status;
+        private SyncStatus _status;
 
         public uint SourceFiles
         {
@@ -23,7 +23,7 @@ namespace SyncMaester.Core
             set { _destinationFiles = value; OnPropertyChanged(nameof(DestinationFiles)); }
         }
 
-        public ScanStatus Status
+        public SyncStatus Status
         {
             get { return _status; }
             set { _status = value; OnPropertyChanged(nameof(Status)); }
@@ -46,7 +46,7 @@ namespace SyncMaester.Core
 
         public void Complete()
         {
-            Status = ScanStatus.Complete;
+            Status = SyncStatus.Complete;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

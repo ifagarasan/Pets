@@ -13,35 +13,35 @@ namespace SyncMaester.Core
         private readonly IDiffBuilder _diffBuilder;
         private readonly IFolderDiffProcessor _folderDiffProcessor;
 
-        public SyncManager(IDiffBuilder diffBuilder, IFolderDiffProcessor folderDiffProcessor, IScanInfo scanInfo)
+        public SyncManager(IDiffBuilder diffBuilder, IFolderDiffProcessor folderDiffProcessor, ISyncInfo syncInfo)
         {
             IsNotNull(diffBuilder);
             IsNotNull(folderDiffProcessor);
-            IsNotNull(scanInfo);
+            IsNotNull(syncInfo);
 
             _diffBuilder = diffBuilder;
 
-            _diffBuilder.SourceFileFound += file => ScanInfo.NewSourceFileFound(file);
-            _diffBuilder.DestinationFileFound += file => ScanInfo.NewDestinationFileFound(file);
+            _diffBuilder.SourceFileFound += file => SyncInfo.NewSourceFileFound(file);
+            _diffBuilder.DestinationFileFound += file => SyncInfo.NewDestinationFileFound(file);
 
             _folderDiffProcessor = folderDiffProcessor;
 
-            ScanInfo = scanInfo;
+            SyncInfo = syncInfo;
         }
 
-        public IScanInfo ScanInfo { get; }
+        public ISyncInfo SyncInfo { get; }
 
         public void Sync(ISettings settings)
         {
             IsNotNull(settings);
             IsNotNull(settings.SyncPairs);
 
-            ScanInfo.Clear();
+            SyncInfo.Clear();
 
             foreach (var diff in settings.SyncPairs.Select(BuildFolderDiffResult))
                 _folderDiffProcessor.Process(diff);
 
-            ScanInfo.Complete();
+            SyncInfo.Complete();
         }
 
         private IFolderDiffResult BuildFolderDiffResult(ISyncPair syncPair)

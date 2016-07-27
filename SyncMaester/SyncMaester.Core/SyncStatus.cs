@@ -1,6 +1,6 @@
 namespace SyncMaester.Core
 {
-    public enum ScanStatus
+    public enum SyncStatus
     {
         NotStarted,
         Complete

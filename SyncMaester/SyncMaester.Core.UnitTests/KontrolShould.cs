@@ -17,7 +17,7 @@ namespace SyncMaester.Core.UnitTests
         ISettings _settings;
         IKontrol _kontrol;
         Mock<ISettingsManager<ISettings>> _mockSettingsManager;
-        private Mock<IScanInfo> _mockScanInfo;
+        private Mock<ISyncInfo> _mockScanInfo;
 
         readonly string _sourceFolder = "abc";
         readonly string _destinationFolder = "efg";
@@ -31,7 +31,7 @@ namespace SyncMaester.Core.UnitTests
         [TestInitialize]
         public void Setup()
         {
-            _mockScanInfo = new Mock<IScanInfo>();
+            _mockScanInfo = new Mock<ISyncInfo>();
 
             _mockFileInfo = new Mock<IKoreFileInfo>();
             _mockFileInfo.Setup(m => m.Exists).Returns(true);
@@ -48,7 +48,7 @@ namespace SyncMaester.Core.UnitTests
 
             _mockSyncManager = new Mock<ISyncManager>();
             _mockSyncManager.Setup(m => m.Sync(It.IsAny<ISettings>()));
-            _mockSyncManager.Setup(m => m.ScanInfo).Returns(_mockScanInfo.Object);
+            _mockSyncManager.Setup(m => m.SyncInfo).Returns(_mockScanInfo.Object);
 
             _kontrol = new Kontrol(_mockSettingsManager.Object, _mockSyncManager.Object);
         }
@@ -94,7 +94,7 @@ namespace SyncMaester.Core.UnitTests
         [TestMethod]
         public void MakeSyncManagerScanInfoAvailable()
         {
-            Assert.AreSame(_mockScanInfo.Object, _kontrol.ScanInfo);
+            Assert.AreSame(_mockScanInfo.Object, _kontrol.SyncInfo);
         }
 
         [TestMethod]

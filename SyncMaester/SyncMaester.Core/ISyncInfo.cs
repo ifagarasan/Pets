@@ -2,11 +2,11 @@
 
 namespace SyncMaester.Core
 {
-    public interface IScanInfo
+    public interface ISyncInfo
     {
         uint SourceFiles { get; }
         uint DestinationFiles { get; }
-        ScanStatus Status { get; }
+        SyncStatus Status { get; }
 
         void Clear();
 

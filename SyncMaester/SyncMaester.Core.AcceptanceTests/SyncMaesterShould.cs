@@ -39,7 +39,7 @@ namespace SyncMaester.Core.AcceptanceTests
 
             _syncManager = new SyncManager(new DiffBuilder(new DiffInfoBuilder(), new FileScanner(new FileRetriever()),
                 new FolderDiffer(new IdentityProvider())), new FolderDiffProcessor(new DiffProcessor(new FileCopier())),
-                new ScanInfo());
+                new SyncInfo());
 
             _kontrol = new Kontrol(_settingsManager, _syncManager);
         }
@@ -279,9 +279,9 @@ namespace SyncMaester.Core.AcceptanceTests
 
             _kontrol.Sync();
 
-            Assert.AreEqual(1u, _kontrol.ScanInfo.SourceFiles);
-            Assert.AreEqual(1u, _kontrol.ScanInfo.DestinationFiles);
-            Assert.AreEqual(ScanStatus.Complete, _kontrol.ScanInfo.Status);
+            Assert.AreEqual(1u, _kontrol.SyncInfo.SourceFiles);
+            Assert.AreEqual(1u, _kontrol.SyncInfo.DestinationFiles);
+            Assert.AreEqual(SyncStatus.Complete, _kontrol.SyncInfo.Status);
         }
 
         private void SetupCurrentTestFolder(string testFolder, SyncLevel syncLevel = SyncLevel.Flat)

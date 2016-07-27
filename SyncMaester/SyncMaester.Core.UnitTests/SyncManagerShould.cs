@@ -19,7 +19,7 @@ namespace SyncMaester.Core.UnitTests
         List<ISyncPair> _syncPairs;
         Mock<ISettings> _mockSettings;
         Mock<IFolderDiffProcessor> _mockFolderDiffProcessor;
-        private Mock<IScanInfo> _mockScanInfo;
+        private Mock<ISyncInfo> _mockScanInfo;
         Mock<IKoreFileInfo> _mockFileInfo;
 
         [TestInitialize]
@@ -27,7 +27,7 @@ namespace SyncMaester.Core.UnitTests
         {
             _mockFileInfo = new Mock<IKoreFileInfo>();
 
-            _mockScanInfo = new Mock<IScanInfo>();
+            _mockScanInfo = new Mock<ISyncInfo>();
 
             _mockFolderDiffProcessor = new Mock<IFolderDiffProcessor>();
             _mockFolderDiffProcessor.Setup(m => m.Process(It.IsAny<IFolderDiffResult>()));

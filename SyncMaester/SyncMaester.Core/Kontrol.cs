@@ -24,7 +24,7 @@ namespace SyncMaester.Core
 
         public ISettings Settings => _settingsManager.Data;
 
-        public IScanInfo ScanInfo => _syncManager.ScanInfo;
+        public ISyncInfo SyncInfo => _syncManager.SyncInfo;
 
         public IReadOnlyCollection<ISyncPair> SyncPairs => _settingsManager.Data.SyncPairs.AsReadOnly();
 

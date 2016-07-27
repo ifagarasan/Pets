@@ -6,7 +6,7 @@ namespace SyncMaester.Core
     public interface IKontrol
     {
         ISettings Settings { get; }
-        IScanInfo ScanInfo { get; }
+        ISyncInfo SyncInfo { get; }
 
         void Sync();
 

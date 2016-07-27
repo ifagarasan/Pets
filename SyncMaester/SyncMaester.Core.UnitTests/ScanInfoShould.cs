@@ -14,48 +14,48 @@ namespace SyncMaester.Core.UnitTests
     [TestClass]
     public class ScanInfoShould
     {
-        IScanInfo _scanInfo;
+        ISyncInfo _syncInfo;
 
         [TestInitialize]
         public void Setup()
         {
-            _scanInfo = new ScanInfo();
+            _syncInfo = new SyncInfo();
         }
 
         [TestMethod]
         public void IncrementSourceFilesOnNewSourceFileFound()
         {
-            _scanInfo.NewSourceFileFound(null);
+            _syncInfo.NewSourceFileFound(null);
 
-            Assert.AreEqual(1u, _scanInfo.SourceFiles);
+            Assert.AreEqual(1u, _syncInfo.SourceFiles);
         }
 
         [TestMethod]
         public void IncrementDestinationFilesOnNewDestinationFileFound()
         {
-            _scanInfo.NewDestinationFileFound(null);
+            _syncInfo.NewDestinationFileFound(null);
 
-            Assert.AreEqual(1u, _scanInfo.DestinationFiles);
+            Assert.AreEqual(1u, _syncInfo.DestinationFiles);
         }
 
         [TestMethod]
         public void ClearResetsToZero()
         {
-            _scanInfo.NewDestinationFileFound(null);
-            _scanInfo.NewSourceFileFound(null);
+            _syncInfo.NewDestinationFileFound(null);
+            _syncInfo.NewSourceFileFound(null);
 
-            _scanInfo.Clear();
+            _syncInfo.Clear();
 
-            Assert.AreEqual(0u, _scanInfo.SourceFiles);
-            Assert.AreEqual(0u, _scanInfo.DestinationFiles);
+            Assert.AreEqual(0u, _syncInfo.SourceFiles);
+            Assert.AreEqual(0u, _syncInfo.DestinationFiles);
         }
 
         [TestMethod]
         public void CompleteSetsStatusToCompleted()
         {
-            _scanInfo.Complete();
+            _syncInfo.Complete();
 
-            Assert.AreEqual(ScanStatus.Complete, _scanInfo.Status);
+            Assert.AreEqual(SyncStatus.Complete, _syncInfo.Status);
         }
     }
 }
